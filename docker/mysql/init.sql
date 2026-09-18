@@ -21,7 +21,26 @@ CREATE TABLE mensagens_rapidas (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, titu
 CREATE TABLE config (chave VARCHAR(60) NOT NULL PRIMARY KEY, valor TEXT, atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP) ENGINE=InnoDB;
 INSERT INTO usuarios(nome,email,senha_hash,perfil) VALUES ('Administrador','admin@navalha.com.br','$2y$12$Vr3/41h26Mvb9nerU/Rwiu9P/gWVYspd30jakmF6mh92gp5HJcdeS','admin');
 INSERT INTO usuarios(nome,email,senha_hash,perfil) VALUES ('admTeste','teste@adm.com','$2y$12$N9Xcjdqf9k.AM7VFHtJ7xe34b7yge9ZqG5R0lYWAIaKGPPxGJ2kHO','admin');
+INSERT INTO usuarios(nome,email,senha_hash,perfil) VALUES ('barbeiro teste','teste@barbeiro.com','$2y$12$N9Xcjdqf9k.AM7VFHtJ7xe34b7yge9ZqG5R0lYWAIaKGPPxGJ2kHO','barbeiro');
+INSERT INTO usuarios(nome,email,senha_hash,perfil) VALUES ('clienteTeste','teste@exemplo.com','$2y$12$N9Xcjdqf9k.AM7VFHtJ7xe34b7yge9ZqG5R0lYWAIaKGPPxGJ2kHO','cliente');
 INSERT INTO categorias(nome,descricao,ordem) VALUES ('Cabelo','Cortes clássicos e modernos',1),('Barba','Cuidados e acabamento',2),('Sobrancelha','Design preciso',3);
 INSERT INTO servicos(categoria_id,nome,descricao,preco,duracao_min) VALUES (1,'Corte social','Acabamento na navalha e finalização com pomada.',40,45),(1,'Degradê','Fade baixo, médio ou alto com acabamento.',45,45),(2,'Barba completa','Desenho, aparagem e toalha quente.',30,45),(3,'Design de sobrancelha','Modelagem com pinça e navalha.',15,20);
 INSERT INTO combos(nome,descricao,preco,duracao_min) VALUES ('Corte + Barba','Corte social ou degradê com barba completa.',65,90),('Visual completo','Corte, barba e sobrancelha.',75,110);
 INSERT INTO config(chave,valor) VALUES ('smtp_host',''),('smtp_port','587'),('smtp_user',''),('smtp_pass',''),('smtp_from_name','Navalha Barbearia'),('smtp_from_email',''),('smtp_ativo','0');
+
+-- carga horária do barbeiro teste (id=3): seg a sáb, 09:00–18:00
+INSERT INTO carga_horaria(barbeiro_id,dia_semana,hora_inicio,hora_fim) VALUES
+  (3,1,'09:00','18:00'),
+  (3,2,'09:00','18:00'),
+  (3,3,'09:00','18:00'),
+  (3,4,'09:00','18:00'),
+  (3,5,'09:00','18:00'),
+  (3,6,'09:00','18:00');
+
+-- barbeiro teste oferece todos os serviços e combos
+INSERT INTO barbeiro_servicos(barbeiro_id,servico_id) VALUES (3,1),(3,2),(3,3),(3,4);
+INSERT INTO barbeiro_combos(barbeiro_id,combo_id) VALUES (3,1),(3,2);
+
+-- mensagem rápida de exemplo
+INSERT INTO mensagens_rapidas(titulo,corpo) VALUES
+  ('Lembrete de agendamento','Olá, {nome_cliente}! Passando para lembrar do seu agendamento em {data_hora}. Qualquer dúvida, fale conosco.');
