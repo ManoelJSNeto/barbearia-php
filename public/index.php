@@ -19,7 +19,7 @@ $combos = $pdo->query(
 
 $barbeiros = $pdo->query(
     "SELECT u.id, u.nome,
-            GROUP_CONCAT(DISTINCT s.nome ORDER BY s.nome SEPARATOR ' · ') AS especialidades
+            GROUP_CONCAT(DISTINCT s.nome ORDER BY s.nome SEPARATOR ', ') AS especialidades
      FROM usuarios u
      LEFT JOIN barbeiro_servicos bs ON bs.barbeiro_id = u.id
      LEFT JOIN servicos s ON s.id = bs.servico_id AND s.ativo = 1
@@ -32,40 +32,44 @@ $titulo = 'Barbearia tradicional';
 require __DIR__ . '/../includes/header.php';
 ?>
 
-<!-- ── HERO ─────────────────────────────────────────────── -->
-<section style="padding: 80px 0 72px; border-bottom: 1px solid var(--border);">
-  <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 64px; align-items: end;">
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section style="padding: 64px 0 56px; border-bottom: 1px solid var(--border);">
+  <div style="display:grid; grid-template-columns:1fr auto; gap:48px; align-items:center;">
 
     <div>
       <p class="eyebrow">Barbearia tradicional</p>
-      <h1 style="margin-bottom: 20px; max-width: 13ch;">Um corte feito do jeito certo.</h1>
-      <p class="lead" style="max-width: 42ch; margin-bottom: 32px;">
+      <h1 style="margin-bottom:16px; max-width:14ch;">Um corte feito do jeito certo.</h1>
+      <p class="lead" style="max-width:44ch; margin-bottom:28px;">
         Escolha o serviço, veja os barbeiros disponíveis e marque seu horário sem complicação.
         Sem fila, sem surpresa no preço.
       </p>
-      <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <a class="btn" href="<?= usuario_logado() ? '/agendar.php' : '/cadastro.php' ?>">Agendar agora</a>
         <a class="btn btn--ghost" href="#servicos">Ver serviços</a>
       </div>
     </div>
 
-    <aside style="background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--gold); padding: 26px 22px;">
-      <p style="font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-pale); margin-bottom: 18px;">Horários disponíveis hoje</p>
+    <aside style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; min-width:240px; max-width:280px; box-shadow:0 2px 12px rgba(0,0,0,.06);">
+      <p style="font-size:11px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin-bottom:14px;">
+        Profissionais disponíveis
+      </p>
       <?php if ($barbeiros): ?>
         <?php foreach (array_slice($barbeiros, 0, 3) as $b): ?>
-          <div style="display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border);">
-            <div>
-              <span style="font-size: 13px; color: var(--text);"><?= e($b['nome']) ?></span>
-              <span style="display:block; font-size: 11px; color: var(--muted);">ver disponibilidade</span>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--border);">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:32px; height:32px; background:var(--accent-light); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:.9rem; color:var(--accent); font-weight:600; flex-shrink:0;">
+                <?= e(mb_strtoupper(mb_substr($b['nome'], 0, 1))) ?>
+              </div>
+              <span style="font-size:13px; color:var(--text);"><?= e(explode(' ', $b['nome'])[0]) ?></span>
             </div>
-            <a href="/agendar.php?barbeiro=<?= (int)$b['id'] ?>" style="font-size: 12px; color: var(--gold); border-bottom: 1px solid var(--faint); padding-bottom: 1px;">Agendar</a>
+            <a href="/agendar.php?barbeiro=<?= (int)$b['id'] ?>" class="btn btn--outline btn--xs">Agendar</a>
           </div>
         <?php endforeach; ?>
       <?php else: ?>
-        <p style="font-size: 13px; color: var(--muted);">Em breve.</p>
+        <p style="font-size:13px; color:var(--muted);">Em breve.</p>
       <?php endif; ?>
-      <div style="margin-top: 18px;">
-        <a class="btn btn--full" href="<?= usuario_logado() ? '/agendar.php' : '/cadastro.php' ?>" style="font-size: 13px; padding: 11px 16px;">
+      <div style="margin-top:14px;">
+        <a class="btn btn--full btn--sm" href="<?= usuario_logado() ? '/agendar.php' : '/cadastro.php' ?>">
           Ver todos os horários
         </a>
       </div>
@@ -74,7 +78,6 @@ require __DIR__ . '/../includes/header.php';
   </div>
 </section>
 
-<?php // media query inline para o hero grid ?>
 <style>
 @media (max-width: 720px) {
   section:first-of-type > div { grid-template-columns: 1fr !important; }
@@ -82,7 +85,7 @@ require __DIR__ . '/../includes/header.php';
 }
 </style>
 
-<!-- ── SERVIÇOS ──────────────────────────────────────────── -->
+<!-- ── SERVIÇOS ──────────────────────────────────────────────── -->
 <section class="section" id="servicos">
   <div class="section-head">
     <h2>Serviços</h2>
@@ -119,14 +122,14 @@ require __DIR__ . '/../includes/header.php';
     <?php endforeach; ?>
 
     <?php if (!$servicos && !$combos): ?>
-      <div class="service-card" style="grid-column: 1/-1;">
-        <p class="service-desc">Nenhum serviço cadastrado ainda.</p>
+      <div class="service-card" style="grid-column:1/-1; text-align:center;">
+        <p style="color:var(--muted);">Nenhum serviço cadastrado ainda.</p>
       </div>
     <?php endif; ?>
   </div>
 
   <?php if ($servicos || $combos): ?>
-    <p style="margin-top: 20px;">
+    <p style="margin-top:20px;">
       <a class="btn" href="<?= usuario_logado() ? '/agendar.php' : '/cadastro.php' ?>">Agendar um serviço</a>
     </p>
   <?php endif; ?>
@@ -134,7 +137,7 @@ require __DIR__ . '/../includes/header.php';
 
 <div class="divider"></div>
 
-<!-- ── BARBEIROS ─────────────────────────────────────────── -->
+<!-- ── BARBEIROS ─────────────────────────────────────────────── -->
 <section class="section" id="barbeiros">
   <div class="section-head">
     <h2>Barbeiros</h2>
@@ -161,7 +164,7 @@ require __DIR__ . '/../includes/header.php';
 
 <div class="divider"></div>
 
-<!-- ── COMO FUNCIONA ─────────────────────────────────────── -->
+<!-- ── COMO FUNCIONA ─────────────────────────────────────────── -->
 <section class="section" id="como-funciona">
   <div class="section-head">
     <h2>Como funciona</h2>
@@ -182,12 +185,12 @@ require __DIR__ . '/../includes/header.php';
     <div class="step">
       <p class="step-n">3</p>
       <p class="step-title">Escolha o barbeiro</p>
-      <p class="step-desc">Ou comece pelo barbeiro se preferir alguém específico. Sem surpresas.</p>
+      <p class="step-desc">Ou comece pelo barbeiro se preferir. Sem surpresas de preço ou tempo.</p>
     </div>
     <div class="step">
       <p class="step-n">4</p>
       <p class="step-title">Confirme presença</p>
-      <p class="step-desc">Você recebe um link por e-mail. Confirme até 2h antes e apareça no horário.</p>
+      <p class="step-desc">Confirme na hora ou pelo e-mail até 2h antes do horário marcado.</p>
     </div>
   </div>
 </section>
