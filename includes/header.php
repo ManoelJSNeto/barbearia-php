@@ -41,6 +41,8 @@ $usuario = usuario_logado();
         <li><a href="/admin/agendamentos.php">Agenda</a></li>
         <li><a href="/admin/barbeiros.php">Barbeiros</a></li>
         <li><a href="/admin/servicos.php">Serviços</a></li>
+        <li><a href="/admin/clientes.php">Clientes</a></li>
+        <li><a href="/admin/tickets.php">Tickets</a></li>
         <li><a href="/admin/configuracoes.php">Config</a></li>
         <li><span class="nav-sep" aria-hidden="true"></span></li>
         <li><a href="/logout.php" class="nav-exit">Sair</a></li>
@@ -48,7 +50,9 @@ $usuario = usuario_logado();
       <?php elseif ($usuario['perfil'] === 'barbeiro'): ?>
         <li><a href="/barbeiro/dashboard.php">Agenda</a></li>
         <li><a href="/barbeiro/servicos.php">Serviços</a></li>
-        <li><a href="/barbeiro/bloquear.php">Bloqueios</a></li>
+        <li><a href="/barbeiro/portfolio.php">Portfólio</a></li>
+        <li><a href="/barbeiro/ticket.php">Sugerir serviço</a></li>
+        <li><a href="/barbeiro/bloquear.php">Folgas</a></li>
         <li><span class="nav-sep" aria-hidden="true"></span></li>
         <li><a href="/logout.php" class="nav-exit">Sair</a></li>
 

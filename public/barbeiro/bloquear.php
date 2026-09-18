@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "INSERT INTO bloqueios(barbeiro_id, data, hora_inicio, hora_fim) VALUES(?,?,?,?)"
         )->execute([$usuario['id'], $data, $ini, $fim]);
 
-        $msg = 'Bloqueio criado.';
+        $msg = 'Folga criada.';
         if ($conflitos > 0) {
             $msg .= " Atenção: há {$conflitos} agendamento(s) neste período — cancele-os manualmente.";
         }
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->prepare(
             "DELETE FROM bloqueios WHERE id=? AND barbeiro_id=?"
         )->execute([$id, $usuario['id']]);
-        flash('ok', 'Bloqueio removido.');
+        flash('ok', 'Folga removida.');
         header('Location: /barbeiro/bloquear.php'); exit;
     }
 }
@@ -87,14 +87,14 @@ for ($i = 0; $i <= 30; $i++) {
     ];
 }
 
-$titulo = 'Bloquear agenda';
+$titulo = 'Folgas';
 require __DIR__ . '/../../includes/header.php';
 ?>
 
 <div style="padding-top:40px; padding-bottom:80px;">
 
   <div class="page-head">
-    <h1>Bloquear agenda</h1>
+    <h1>Minhas folgas</h1>
     <p class="sub">Indique períodos em que você não estará disponível</p>
   </div>
 
@@ -103,7 +103,7 @@ require __DIR__ . '/../../includes/header.php';
     <!-- lista de bloqueios -->
     <div>
       <div class="section-head">
-        <h2 style="font-size:1.3rem">Bloqueios ativos</h2>
+        <h2 style="font-size:1.3rem">Folgas ativas</h2>
         <span class="section-head-line"></span>
       </div>
 
@@ -133,14 +133,14 @@ require __DIR__ . '/../../includes/header.php';
           <?php endforeach; ?>
         </div>
       <?php else: ?>
-        <div class="card"><p class="muted">Nenhum bloqueio nos próximos 30 dias.</p></div>
+        <div class="card"><p class="muted">Nenhuma folga nos próximos 30 dias.</p></div>
       <?php endif; ?>
     </div>
 
-    <!-- formulário novo bloqueio -->
+    <!-- formulário nova folga -->
     <div>
       <div class="section-head">
-        <h2 style="font-size:1.3rem">Novo bloqueio</h2>
+        <h2 style="font-size:1.3rem">Nova folga</h2>
         <span class="section-head-line"></span>
       </div>
       <div class="card">
@@ -169,7 +169,7 @@ require __DIR__ . '/../../includes/header.php';
             </div>
           </div>
 
-          <button class="btn btn--sm" type="submit">Criar bloqueio</button>
+          <button class="btn btn--sm" type="submit">Criar folga</button>
         </form>
       </div>
     </div>

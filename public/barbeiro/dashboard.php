@@ -81,7 +81,7 @@ require __DIR__ . '/../../includes/header.php';
     </div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
       <a class="btn btn--ghost btn--sm" href="/barbeiro/servicos.php">Meus serviços</a>
-      <a class="btn btn--ghost btn--sm" href="/barbeiro/bloquear.php">Bloqueios</a>
+      <a class="btn btn--ghost btn--sm" href="/barbeiro/bloquear.php">Minhas folgas</a>
     </div>
   </div>
 
