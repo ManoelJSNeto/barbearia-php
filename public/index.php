@@ -17,6 +17,15 @@ $combos = $pdo->query(
     'SELECT id, nome, descricao, preco, duracao_min FROM combos WHERE ativo = 1 ORDER BY nome'
 )->fetchAll();
 
+// capa de cada serviço (primeira foto)
+$fotosCapas = [];
+foreach ($pdo->query(
+    'SELECT servico_id, MIN(foto_path) AS foto_path
+     FROM servico_fotos GROUP BY servico_id'
+)->fetchAll() as $f) {
+    $fotosCapas[$f['servico_id']] = $f['foto_path'];
+}
+
 $barbeiros = $pdo->query(
     "SELECT u.id, u.nome,
             GROUP_CONCAT(DISTINCT s.nome ORDER BY s.nome SEPARATOR ', ') AS especialidades,
@@ -109,8 +118,14 @@ require __DIR__ . '/../includes/header.php';
 
   <?php if ($servicos || $combos): ?>
     <div class="services-grid">
-      <?php foreach ($servicos as $s): ?>
+      <?php foreach ($servicos as $s):
+        $capa = $fotosCapas[$s['id']] ?? null; ?>
         <div class="service-card">
+          <?php if ($capa): ?>
+            <div class="service-card-img">
+              <img src="/uploads/<?= e($capa) ?>" alt="<?= e($s['nome']) ?>" loading="lazy">
+            </div>
+          <?php endif; ?>
           <p class="service-cat"><?= e($s['categoria']) ?></p>
           <p class="service-name"><?= e($s['nome']) ?></p>
           <?php if ($s['descricao']): ?>

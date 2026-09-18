@@ -2,12 +2,60 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/auth.php';
+require_once __DIR__ . '/../../includes/mail.php';
 
 exigir_login();
 exigir_perfil('barbeiro');
 
 $pdo     = db();
 $usuario = usuario_logado();
+
+// ── POST: enviar mensagem rápida ──────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    validar_csrf();
+    if (($_POST['acao'] ?? '') === 'enviar_msg') {
+        $ag_id  = (int)($_POST['ag_id']  ?? 0);
+        $msg_id = (int)($_POST['msg_id'] ?? 0);
+
+        $agStmt = $pdo->prepare(
+            "SELECT a.data_hora,
+                    cli.nome AS cliente_nome, cli.email AS cliente_email,
+                    bar.nome AS barbeiro_nome,
+                    COALESCE(s.nome, c.nome) AS item_nome
+             FROM agendamentos a
+             JOIN usuarios cli ON cli.id = a.cliente_id
+             JOIN usuarios bar ON bar.id = a.barbeiro_id
+             LEFT JOIN servicos s ON s.id = a.servico_id
+             LEFT JOIN combos c   ON c.id = a.combo_id
+             WHERE a.id = ? AND a.barbeiro_id = ?"
+        );
+        $agStmt->execute([$ag_id, $usuario['id']]);
+        $ag = $agStmt->fetch();
+
+        $msgStmt = $pdo->prepare("SELECT titulo, corpo FROM mensagens_rapidas WHERE id=? AND ativo=1");
+        $msgStmt->execute([$msg_id]);
+        $msg = $msgStmt->fetch();
+
+        if ($ag && $msg) {
+            $dt   = new DateTimeImmutable($ag['data_hora']);
+            $vars = [
+                '{nome_cliente}' => $ag['cliente_nome'],
+                '{data_hora}'    => $dt->format('d/m/Y \à\s H:i'),
+                '{barbeiro}'     => $ag['barbeiro_nome'],
+                '{servico}'      => $ag['item_nome'],
+            ];
+            $corpo = strtr($msg['corpo'], $vars);
+            $ok    = enviar_email(
+                $ag['cliente_email'],
+                $ag['cliente_nome'],
+                $msg['titulo'],
+                nl2br(e($corpo))
+            );
+            flash($ok ? 'ok' : 'err', $ok ? 'Mensagem enviada para ' . $ag['cliente_nome'] . '.' : 'Falha ao enviar. Verifique o SMTP.');
+        }
+        header('Location: /barbeiro/dashboard.php'); exit;
+    }
+}
 
 // próximos 5 dias de agenda (todos os status relevantes)
 $proximos = $pdo->prepare(
@@ -67,6 +115,11 @@ $receitaMes = (float)$stmtReceitaMes->fetchColumn();
 
 $diasSemana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 $hoje = date('Y-m-d');
+
+// mensagens rápidas disponíveis
+$mensagensRapidas = $pdo->query(
+    "SELECT id, titulo FROM mensagens_rapidas WHERE ativo=1 ORDER BY titulo"
+)->fetchAll();
 
 $titulo = 'Minha agenda';
 require __DIR__ . '/../../includes/header.php';
@@ -156,12 +209,26 @@ require __DIR__ . '/../../includes/header.php';
                 <div class="agenda-price">R$ <?= number_format((float)$ag['preco'], 2, ',', '.') ?></div>
               </div>
 
-              <!-- lado direito: badge -->
+              <!-- lado direito: badge + msg rápida -->
               <div class="agenda-card-side">
                 <?php if ($confirmado): ?>
                   <span class="badge badge--ok">Confirmado</span>
                 <?php else: ?>
                   <span class="badge badge--warn">Pendente</span>
+                <?php endif; ?>
+
+                <?php if ($mensagensRapidas): ?>
+                <form method="post" style="display:flex; gap:4px; align-items:center; margin-top:6px; flex-wrap:wrap; justify-content:flex-end;">
+                  <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                  <input type="hidden" name="acao" value="enviar_msg">
+                  <input type="hidden" name="ag_id" value="<?= (int)$ag['id'] ?>">
+                  <select name="msg_id" style="font-size:11px; padding:3px 6px; border:1px solid var(--border); background:var(--surface); color:var(--text); border-radius:var(--radius); max-width:140px;">
+                    <?php foreach ($mensagensRapidas as $m): ?>
+                      <option value="<?= (int)$m['id'] ?>"><?= e($m['titulo']) ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                  <button type="submit" class="btn btn--xs btn--ghost">Enviar</button>
+                </form>
                 <?php endif; ?>
               </div>
 

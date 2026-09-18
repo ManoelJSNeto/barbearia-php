@@ -3,6 +3,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/auth.php';
 
+require_once __DIR__ . '/../../includes/mail.php';
+
 exigir_perfil('admin');
 
 $pdo = db();
@@ -18,8 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "UPDATE agendamentos SET status='cancelado', cancelado_em=NOW(), cancelado_por='admin' WHERE id=?"
         )->execute([$id]);
 
-        // e-mail de cancelamento
-        require_once __DIR__ . '/../../includes/mail.php';
         $agEmail = $pdo->prepare(
             "SELECT a.data_hora, a.preco,
                     cli.nome AS cliente_nome, cli.email AS cliente_email,
@@ -37,6 +37,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($agDados) { mail_cancelamento($agDados, 'admin'); }
 
         flash('ok', 'Agendamento cancelado.');
+        header('Location: /admin/agendamentos.php'); exit;
+    }
+
+    // enviar mensagem rápida para cliente
+    if ($acao === 'enviar_msg') {
+        $ag_id  = (int)($_POST['ag_id']  ?? 0);
+        $msg_id = (int)($_POST['msg_id'] ?? 0);
+
+        $agStmt = $pdo->prepare(
+            "SELECT a.data_hora, a.preco,
+                    cli.nome AS cliente_nome, cli.email AS cliente_email,
+                    bar.nome AS barbeiro_nome,
+                    COALESCE(s.nome, c.nome) AS item_nome
+             FROM agendamentos a
+             JOIN usuarios cli ON cli.id = a.cliente_id
+             JOIN usuarios bar ON bar.id = a.barbeiro_id
+             LEFT JOIN servicos s ON s.id = a.servico_id
+             LEFT JOIN combos c   ON c.id = a.combo_id
+             WHERE a.id = ?"
+        );
+        $agStmt->execute([$ag_id]);
+        $ag = $agStmt->fetch();
+
+        $msgStmt = $pdo->prepare("SELECT titulo, corpo FROM mensagens_rapidas WHERE id=? AND ativo=1");
+        $msgStmt->execute([$msg_id]);
+        $msg = $msgStmt->fetch();
+
+        if ($ag && $msg) {
+            $dt    = new DateTimeImmutable($ag['data_hora']);
+            $vars  = [
+                '{nome_cliente}' => $ag['cliente_nome'],
+                '{data_hora}'    => $dt->format('d/m/Y \à\s H:i'),
+                '{barbeiro}'     => $ag['barbeiro_nome'],
+                '{servico}'      => $ag['item_nome'],
+            ];
+            $corpo = strtr($msg['corpo'], $vars);
+            $ok    = enviar_email(
+                $ag['cliente_email'],
+                $ag['cliente_nome'],
+                $msg['titulo'],
+                nl2br(e($corpo))
+            );
+            flash($ok ? 'ok' : 'err', $ok ? 'Mensagem enviada.' : 'Falha ao enviar. Verifique o SMTP.');
+        } else {
+            flash('err', 'Agendamento ou mensagem não encontrado.');
+        }
         header('Location: /admin/agendamentos.php'); exit;
     }
 }
@@ -81,6 +127,10 @@ $agendamentos = $stmt->fetchAll();
 
 $barbeiros = $pdo->query(
     "SELECT id, nome FROM usuarios WHERE perfil='barbeiro' AND ativo=1 ORDER BY nome"
+)->fetchAll();
+
+$mensagensRapidas = $pdo->query(
+    "SELECT id, titulo FROM mensagens_rapidas WHERE ativo=1 ORDER BY titulo"
 )->fetchAll();
 
 $statusLabel = [
@@ -166,12 +216,27 @@ require __DIR__ . '/../../includes/header.php';
             <td><span class="badge <?= $cls ?>"><?= $lbl ?></span></td>
             <td>
               <?php if (in_array($ag['status'], ['pendente','confirmado'], true)): ?>
-                <form method="post" onsubmit="return confirm('Cancelar este agendamento?')">
-                  <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                  <input type="hidden" name="acao" value="cancelar">
-                  <input type="hidden" name="id" value="<?= (int)$ag['id'] ?>">
-                  <button type="submit" style="background:none;border:none;color:var(--err);font-size:12px;cursor:pointer;padding:0;">Cancelar</button>
-                </form>
+                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+                  <form method="post" onsubmit="return confirm('Cancelar este agendamento?')" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                    <input type="hidden" name="acao" value="cancelar">
+                    <input type="hidden" name="id" value="<?= (int)$ag['id'] ?>">
+                    <button type="submit" style="background:none;border:none;color:var(--err);font-size:12px;cursor:pointer;padding:0;">Cancelar</button>
+                  </form>
+                  <?php if ($mensagensRapidas): ?>
+                  <form method="post" style="display:flex; gap:4px; align-items:center;">
+                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                    <input type="hidden" name="acao" value="enviar_msg">
+                    <input type="hidden" name="ag_id" value="<?= (int)$ag['id'] ?>">
+                    <select name="msg_id" style="font-size:11px; padding:3px 6px; border:1px solid var(--border); background:var(--surface); color:var(--text); border-radius:var(--radius);">
+                      <?php foreach ($mensagensRapidas as $m): ?>
+                        <option value="<?= (int)$m['id'] ?>"><?= e($m['titulo']) ?></option>
+                      <?php endforeach; ?>
+                    </select>
+                    <button type="submit" class="btn btn--xs btn--ghost">Enviar</button>
+                  </form>
+                  <?php endif; ?>
+                </div>
               <?php endif; ?>
             </td>
           </tr>

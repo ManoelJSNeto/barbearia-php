@@ -27,7 +27,7 @@ if (!$barbeiro) {
 
 // serviços que ele oferece
 $servicos = $pdo->prepare(
-    "SELECT s.nome, s.descricao, s.preco, s.duracao_min, c.nome AS categoria
+    "SELECT s.id, s.nome, s.descricao, s.preco, s.duracao_min, c.nome AS categoria
      FROM barbeiro_servicos bs
      JOIN servicos s ON s.id = bs.servico_id AND s.ativo = 1
      JOIN categorias c ON c.id = s.categoria_id AND c.ativo = 1
@@ -47,6 +47,22 @@ $combos = $pdo->prepare(
 );
 $combos->execute([$id]);
 $combos = $combos->fetchAll();
+
+// capa dos serviços
+$srvIds = array_column($servicos, 'id');
+$fotosCapas = [];
+if ($srvIds) {
+    $placeholders = implode(',', array_fill(0, count($srvIds), '?'));
+    $fstmt = $pdo->prepare(
+        "SELECT servico_id, MIN(foto_path) AS foto_path
+         FROM servico_fotos WHERE servico_id IN ($placeholders)
+         GROUP BY servico_id"
+    );
+    $fstmt->execute($srvIds);
+    foreach ($fstmt->fetchAll() as $f) {
+        $fotosCapas[$f['servico_id']] = $f['foto_path'];
+    }
+}
 
 // portfólio (últimas 10 fotos)
 $portfolio = $pdo->prepare(
@@ -88,8 +104,14 @@ require __DIR__ . '/../includes/header.php';
     </div>
 
     <div class="services-grid" style="margin-bottom:36px;">
-      <?php foreach ($servicos as $s): ?>
+      <?php foreach ($servicos as $s):
+        $capa = $fotosCapas[$s['id']] ?? null; ?>
         <div class="service-card">
+          <?php if ($capa): ?>
+            <div class="service-card-img">
+              <img src="/uploads/<?= e($capa) ?>" alt="<?= e($s['nome']) ?>" loading="lazy">
+            </div>
+          <?php endif; ?>
           <p class="service-cat"><?= e($s['categoria']) ?></p>
           <p class="service-name"><?= e($s['nome']) ?></p>
           <?php if ($s['descricao']): ?><p class="service-desc"><?= e($s['descricao']) ?></p><?php endif; ?>
