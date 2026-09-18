@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navalha — Barbearia</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ─────────────────────────────── */
+:root {
+  --bg:        #1A1208;
+  --surface:   #221608;
+  --surface2:  #2C1F0E;
+  --border:    #3D2B0F;
+  --gold:      #B8922A;
+  --gold-dim:  #7A5E20;
+  --gold-pale: #8C6E3F;
+  --text:      #E8DCC8;
+  --muted:     #9A8A72;
+  --faint:     #4A3820;
+}
+
+/* ── RESET ───────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* ── TEXTURE OVERLAY ─────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      rgba(184,146,42,.018) 3px,
+      rgba(184,146,42,.018) 4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 8px,
+      rgba(0,0,0,.06) 8px,
+      rgba(0,0,0,.06) 9px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
+
+/* ── NAV ─────────────────────────────────── */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 64px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-logo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.nav-logo .wordmark {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: .01em;
+}
+.nav-logo .dot {
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  display: inline-block;
+  position: relative;
+  top: -3px;
+}
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 400;
+  transition: color .15s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  padding: 9px 20px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background .15s;
+}
+.nav-cta:hover { background: #C9A030; }
+
+/* ── HERO ────────────────────────────────── */
+.hero {
+  padding: 80px 48px 72px;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 64px;
+  align-items: end;
+}
+.hero-left {}
+.hero-eyebrow {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-eyebrow::after {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: var(--gold-dim);
+}
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.8rem, 5.5vw, 4.2rem);
+  font-weight: 700;
+  line-height: 1.08;
+  color: var(--text);
+  margin-bottom: 24px;
+  max-width: 14ch;
+}
+.hero-sub {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 300;
+  max-width: 42ch;
+  margin-bottom: 36px;
+  line-height: 1.75;
+}
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.btn-primary {
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  padding: 13px 28px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-ghost {
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: none;
+  border-bottom: 1px solid var(--faint);
+  padding-bottom: 1px;
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--gold-pale); }
+
+/* hero card lateral */
+.hero-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  padding: 28px 24px;
+}
+.hero-card .hc-label {
+  font-size: 11px;
+  color: var(--gold-pale);
+  font-weight: 500;
+  margin-bottom: 16px;
+  letter-spacing: .05em;
+}
+.hero-card .hc-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.hero-card .hc-item:last-of-type { border-bottom: none; }
+.hero-card .hc-name { color: var(--text); }
+.hero-card .hc-price { color: var(--gold); font-weight: 500; }
+.hero-card .hc-time { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+/* ── DIVIDER ─────────────────────────────── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 48px;
+}
+
+/* ── SECTION ─────────────────────────────── */
+.section {
+  padding: 72px 48px;
+  max-width: 1100px;
+}
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+.section-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.section-header .sh-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  max-width: 200px;
+}
+
+/* ── SERVIÇOS ────────────────────────────── */
+.servicos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.servico-item {
+  background: var(--surface);
+  padding: 24px 22px;
+  transition: background .15s;
+  cursor: pointer;
+}
+.servico-item:hover { background: var(--surface2); }
+.servico-cat {
+  font-size: 11px;
+  color: var(--gold-pale);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.servico-nome {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.servico-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 14px;
+}
+.servico-preco { color: var(--gold); font-size: 14px; font-weight: 500; }
+.servico-tempo { color: var(--muted); font-size: 12px; }
+
+/* ── BARBEIROS ───────────────────────────── */
+.barbeiros-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  max-width: 680px;
+}
+.barbeiro-row {
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 22px;
+  text-decoration: none;
+  transition: background .15s;
+}
+.barbeiro-row:hover { background: var(--surface2); }
+.barbeiro-avatar {
+  width: 44px;
+  height: 44px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--gold-dim);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+}
+.barbeiro-info { flex: 1; }
+.barbeiro-nome { color: var(--text); font-size: 14px; font-weight: 500; }
+.barbeiro-esp  { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.barbeiro-seta { color: var(--gold-dim); font-size: 16px; }
+
+/* ── COMO FUNCIONA ───────────────────────── */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0;
+  border: 1px solid var(--border);
+  background: var(--border);
+}
+.step {
+  background: var(--surface);
+  padding: 28px 24px;
+  border-left: 3px solid transparent;
+  transition: border-color .15s, background .15s;
+}
+.step:hover { border-left-color: var(--gold-dim); background: var(--surface2); }
+.step-n {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--faint);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+.step-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── IDENTIDADE VISUAL ───────────────────── */
+.tokens-section {
+  padding: 72px 48px;
+  max-width: 1100px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.tokens-label {
+  font-size: 11px;
+  color: var(--gold-pale);
+  font-weight: 500;
+  margin-bottom: 32px;
+  letter-spacing: .06em;
+}
+.tokens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 40px;
+}
+.token-chip { display: flex; flex-direction: column; gap: 6px; }
+.chip-swatch { height: 36px; border: 1px solid var(--border); }
+.chip-name { font-size: 11px; color: var(--muted); }
+.chip-hex  { font-size: 11px; color: var(--gold-pale); font-family: 'Courier New', monospace; }
+
+.type-row {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.type-row:last-child { border-bottom: none; }
+.type-sample-serif {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: var(--text);
+  min-width: 180px;
+}
+.type-sample-sans {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 1rem;
+  color: var(--text);
+  min-width: 180px;
+}
+.type-meta { font-size: 12px; color: var(--muted); }
+
+/* ── FOOTER ──────────────────────────────── */
+footer {
+  padding: 32px 48px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: var(--muted);
+}
+.footer-tag { font-size: 12px; color: var(--faint); }
+
+/* ── RESPONSIVE ──────────────────────────── */
+@media (max-width: 720px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; padding: 48px 20px 56px; gap: 40px; }
+  .hero-card { display: none; }
+  .section, .tokens-section { padding: 56px 20px; }
+  .divider { margin: 0 20px; }
+  footer { padding: 28px 20px; flex-direction: column; gap: 8px; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="wordmark">Navalha</span>
+    <span class="dot"></span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#servicos">Serviços</a></li>
+    <li><a href="#barbeiros">Barbeiros</a></li>
+    <li><a href="#como-funciona">Como funciona</a></li>
+  </ul>
+  <a href="#" class="nav-cta">Agendar horário</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Barbearia tradicional</p>
+    <h1>Um corte feito do jeito certo.</h1>
+    <p class="hero-sub">Escolha o serviço, veja os barbeiros disponíveis e marque o horário sem complicação. Sem fila, sem surpresa no preço.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn-primary">Agendar agora</a>
+      <a href="#servicos" class="btn-ghost">Ver serviços</a>
+    </div>
+  </div>
+  <div class="hero-card">
+    <p class="hc-label">Hoje, horários disponíveis</p>
+    <div class="hc-item">
+      <div>
+        <div class="hc-name">14h00 — Rafael</div>
+        <div class="hc-time">Corte + Barba · 60 min</div>
+      </div>
+      <span class="hc-price">R$65</span>
+    </div>
+    <div class="hc-item">
+      <div>
+        <div class="hc-name">14h45 — Marcos</div>
+        <div class="hc-time">Corte social · 45 min</div>
+      </div>
+      <span class="hc-price">R$40</span>
+    </div>
+    <div class="hc-item">
+      <div>
+        <div class="hc-name">16h30 — Rafael</div>
+        <div class="hc-time">Barba completa · 45 min</div>
+      </div>
+      <span class="hc-price">R$30</span>
+    </div>
+    <div style="margin-top:18px">
+      <a href="#" class="btn-primary" style="width:100%;display:block;text-align:left;font-size:13px;padding:11px 16px;">Ver todos os horários</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SERVIÇOS -->
+<section class="section" id="servicos">
+  <div class="section-header">
+    <h2>Serviços</h2>
+    <span class="sh-line"></span>
+  </div>
+  <div class="servicos-grid">
+    <div class="servico-item">
+      <p class="servico-cat">Cabelo</p>
+      <p class="servico-nome">Corte social</p>
+      <p style="font-size:12px;color:var(--muted)">Acabamento na navalha e finalização com pomada.</p>
+      <div class="servico-meta">
+        <span class="servico-preco">R$ 40</span>
+        <span class="servico-tempo">45 min</span>
+      </div>
+    </div>
+    <div class="servico-item">
+      <p class="servico-cat">Cabelo</p>
+      <p class="servico-nome">Degradê</p>
+      <p style="font-size:12px;color:var(--muted)">Fade baixo, médio ou alto com acabamento a navalha.</p>
+      <div class="servico-meta">
+        <span class="servico-preco">R$ 45</span>
+        <span class="servico-tempo">45 min</span>
+      </div>
+    </div>
+    <div class="servico-item">
+      <p class="servico-cat">Barba</p>
+      <p class="servico-nome">Barba completa</p>
+      <p style="font-size:12px;color:var(--muted)">Desenho, aparagem e toalha quente.</p>
+      <div class="servico-meta">
+        <span class="servico-preco">R$ 30</span>
+        <span class="servico-tempo">45 min</span>
+      </div>
+    </div>
+    <div class="servico-item">
+      <p class="servico-cat">Sobrancelha</p>
+      <p class="servico-nome">Design de sobrancelha</p>
+      <p style="font-size:12px;color:var(--muted)">Modelagem com pinça e navalha.</p>
+      <div class="servico-meta">
+        <span class="servico-preco">R$ 15</span>
+        <span class="servico-tempo">20 min</span>
+      </div>
+    </div>
+    <div class="servico-item" style="border-left: 3px solid var(--gold);">
+      <p class="servico-cat" style="color:var(--gold)">Combo</p>
+      <p class="servico-nome">Corte + Barba</p>
+      <p style="font-size:12px;color:var(--muted)">Corte social ou degradê com barba completa.</p>
+      <div class="servico-meta">
+        <span class="servico-preco">R$ 65</span>
+        <span class="servico-tempo">60 min</span>
+      </div>
+    </div>
+    <div class="servico-item" style="border-left: 3px solid var(--gold);">
+      <p class="servico-cat" style="color:var(--gold)">Combo</p>
+      <p class="servico-nome">Corte + Barba + Sobrancelha</p>
+      <p style="font-size:12px;color:var(--muted)">Pacote completo de visual.</p>
+      <div class="servico-meta">
+        <span class="servico-preco">R$ 75</span>
+        <span class="servico-tempo">80 min</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BARBEIROS -->
+<section class="section" id="barbeiros">
+  <div class="section-header">
+    <h2>Barbeiros</h2>
+    <span class="sh-line"></span>
+  </div>
+  <div class="barbeiros-list">
+    <a href="#" class="barbeiro-row">
+      <div class="barbeiro-avatar">R</div>
+      <div class="barbeiro-info">
+        <p class="barbeiro-nome">Rafael Souza</p>
+        <p class="barbeiro-esp">Degradê · Barba · Corte social</p>
+      </div>
+      <span class="barbeiro-seta">›</span>
+    </a>
+    <a href="#" class="barbeiro-row">
+      <div class="barbeiro-avatar">M</div>
+      <div class="barbeiro-info">
+        <p class="barbeiro-nome">Marcos Alves</p>
+        <p class="barbeiro-esp">Corte social · Sobrancelha</p>
+      </div>
+      <span class="barbeiro-seta">›</span>
+    </a>
+    <a href="#" class="barbeiro-row">
+      <div class="barbeiro-avatar">L</div>
+      <div class="barbeiro-info">
+        <p class="barbeiro-nome">Lucas Ferreira</p>
+        <p class="barbeiro-esp">Degradê · Barba · Combos</p>
+      </div>
+      <span class="barbeiro-seta">›</span>
+    </a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMO FUNCIONA -->
+<section class="section" id="como-funciona">
+  <div class="section-header">
+    <h2>Como funciona</h2>
+    <span class="sh-line"></span>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <p class="step-n">1</p>
+      <p class="step-title">Escolha o serviço</p>
+      <p class="step-desc">Veja os serviços disponíveis, os preços e o tempo de cada um. Combos têm desconto automático.</p>
+    </div>
+    <div class="step">
+      <p class="step-n">2</p>
+      <p class="step-title">Veja os horários</p>
+      <p class="step-desc">O sistema mostra só o que está disponível, com base na agenda real dos barbeiros.</p>
+    </div>
+    <div class="step">
+      <p class="step-n">3</p>
+      <p class="step-title">Escolha o barbeiro</p>
+      <p class="step-desc">Ou comece pelo barbeiro se preferir alguém específico. Você vê o portfólio antes de decidir.</p>
+    </div>
+    <div class="step">
+      <p class="step-n">4</p>
+      <p class="step-title">Confirme presença</p>
+      <p class="step-desc">Você recebe um email com o link de confirmação. Confirme até 2h antes e apareça no horário.</p>
+    </div>
+  </div>
+</section>
+
+<!-- IDENTIDADE VISUAL -->
+<div class="tokens-section">
+  <p class="tokens-label">Identidade visual — barbearia-php</p>
+
+  <div class="tokens-grid">
+    <div class="token-chip">
+      <div class="chip-swatch" style="background:#1A1208"></div>
+      <p class="chip-name">Fundo</p>
+      <p class="chip-hex">#1A1208</p>
+    </div>
+    <div class="token-chip">
+      <div class="chip-swatch" style="background:#221608"></div>
+      <p class="chip-name">Superfície</p>
+      <p class="chip-hex">#221608</p>
+    </div>
+    <div class="token-chip">
+      <div class="chip-swatch" style="background:#2C1F0E"></div>
+      <p class="chip-name">Card</p>
+      <p class="chip-hex">#2C1F0E</p>
+    </div>
+    <div class="token-chip">
+      <div class="chip-swatch" style="background:#3D2B0F"></div>
+      <p class="chip-name">Borda</p>
+      <p class="chip-hex">#3D2B0F</p>
+    </div>
+    <div class="token-chip">
+      <div class="chip-swatch" style="background:#B8922A"></div>
+      <p class="chip-name">Dourado</p>
+      <p class="chip-hex">#B8922A</p>
+    </div>
+    <div class="token-chip">
+      <div class="chip-swatch" style="background:#E8DCC8"></div>
+      <p class="chip-name">Texto</p>
+      <p class="chip-hex">#E8DCC8</p>
+    </div>
+  </div>
+
+  <div>
+    <div class="type-row">
+      <span class="type-sample-serif">Playfair Display</span>
+      <span class="type-meta">Títulos, nomes, destaques — serif com peso</span>
+    </div>
+    <div class="type-row">
+      <span class="type-sample-sans">IBM Plex Sans</span>
+      <span class="type-meta">Corpo, UI, labels, preços — legível e neutro</span>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-brand">Navalha</span>
+  <span class="footer-tag">barbearia-php · github.com/ManoelJSNeto/barbearia-php</span>
+</footer>
+
+</body>
+</html>

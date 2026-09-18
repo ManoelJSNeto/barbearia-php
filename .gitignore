@@ -1,0 +1,6 @@
+.env
+vendor/
+uploads/*
+!uploads/.htaccess
+*.log
+.DS_Store

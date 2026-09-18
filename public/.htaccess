@@ -1,0 +1,32 @@
+Options -Indexes
+
+# Security headers
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "DENY"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set X-XSS-Protection "1; mode=block"
+Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+# Remove server signature
+ServerSignature Off
+
+# Rewrite engine (URLs limpas, opcional)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Bloqueia acesso a includes de fora do public
+  RewriteRule ^(includes|docker|tests|vendor)/ - [F,L]
+</IfModule>
+
+# Bloqueia arquivos sensíveis
+<FilesMatch "\.(env|json|lock|md|sql|log|sh|yml|yaml)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# PHP settings de produção (sobrescrevem se o php.ini permitir)
+<IfModule mod_php.c>
+  php_flag display_errors Off
+  php_flag log_errors On
+</IfModule>

@@ -1,0 +1,38 @@
+services:
+  app:
+    build: ./docker
+    ports: ["8080:80"]
+    volumes:
+      - ./public:/var/www/html
+      - ./includes:/var/www/includes
+      - ./uploads:/var/www/html/uploads
+      - ./vendor:/var/www/vendor
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: barbearia
+      DB_USER: barbearia
+      DB_PASS: secret
+      APP_URL: http://localhost:8080
+      APP_SECRET: desenvolvimento-altere-esta-chave
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: barbearia
+      MYSQL_USER: barbearia
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: rootsecret
+    ports: ["3306:3306"]
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootsecret"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+volumes:
+  db_data:

@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brief — Barbearia</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0E0E0E;
+    --surface:   #181818;
+    --border:    #2A2A2A;
+    --accent:    #C8A96E;
+    --accent-dim:#7A6340;
+    --text:      #E8E4DC;
+    --muted:     #888880;
+    --danger:    #C0392B;
+    --ok:        #4A7C59;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 28px 100px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+    margin-bottom: 56px;
+  }
+  .tag {
+    font-size: 11px;
+    letter-spacing: .12em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.1;
+    color: var(--text);
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+  h1 em {
+    color: var(--accent);
+    font-style: normal;
+  }
+  .subtitle {
+    color: var(--muted);
+    max-width: 560px;
+    font-size: 15px;
+  }
+
+  /* ── SECTION ── */
+  section { margin-bottom: 64px; }
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.55rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 24px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin: 28px 0 10px;
+  }
+  p { margin-bottom: 12px; color: var(--text); }
+  ul { padding-left: 20px; }
+  ul li { margin-bottom: 6px; color: var(--text); }
+  li::marker { color: var(--accent-dim); }
+
+  /* ── CARDS PERFIL ── */
+  .profiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .profile-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 22px 20px;
+  }
+  .profile-card .role {
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .profile-card strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .profile-card ul { padding-left: 16px; }
+  .profile-card li { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+
+  /* ── FLOW ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .flow-arrow {
+    color: var(--accent-dim);
+    padding: 0 8px;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .flow-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  /* ── ESTRUTURA DE ARQUIVOS ── */
+  .tree {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px 28px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--muted);
+    overflow-x: auto;
+  }
+  .tree .dir  { color: var(--accent); }
+  .tree .file { color: var(--text); }
+  .tree .note { color: var(--accent-dim); font-size: 12px; }
+
+  /* ── DOCKER ── */
+  .code-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px 28px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    overflow-x: auto;
+    color: #b5cea8;
+  }
+  .code-block .key   { color: #9cdcfe; }
+  .code-block .val   { color: #ce9178; }
+  .code-block .comment { color: #6a9955; }
+
+  /* ── BANCO ── */
+  .tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .table-card .tname {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .table-card .field {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Courier New', monospace;
+    margin-bottom: 2px;
+  }
+  .table-card .field.pk { color: var(--text); }
+
+  /* ── NOTIF TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+  th {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px;
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .badge-c { background: #1a3a4a; color: #7ecff0; }
+  .badge-b { background: #2a3a1a; color: #8fd47a; }
+  .badge-a { background: #3a2a1a; color: #e0a060; }
+
+  /* ── FASES ── */
+  .phases { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+  .phase {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+  }
+  .phase-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    color: var(--accent-dim);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 32px;
+  }
+  .phase-content strong { display: block; color: var(--text); margin-bottom: 4px; font-size: 14px; }
+  .phase-content span { color: var(--muted); font-size: 13px; }
+
+  /* ── REGRA HIGHLIGHT ── */
+  .rule-box {
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    border-radius: 0 4px 4px 0;
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .rule-box strong { color: var(--text); }
+
+  @media (max-width: 600px) {
+    body { padding: 36px 18px 80px; }
+    .flow { gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="tag">Project Brief — v1.0</p>
+  <h1>Barbearia<br><em>Web App</em></h1>
+  <p class="subtitle">Sistema de agendamento online para barbearia com painel do cliente, barbeiro e admin. PHP puro, MySQL containerizado, sem frameworks.</p>
+</header>
+
+<!-- VISÃO GERAL -->
+<section>
+  <h2>Visão Geral</h2>
+  <p>Aplicação web multi-perfil para uma barbearia, permitindo que clientes visualizem serviços, vejam o portfólio dos barbeiros e agendem horários. Barbeiros gerenciam sua própria agenda e expõem seu trabalho. Admins controlam o catálogo, equipe e operação.</p>
+  <p>Stack intencional: <strong>PHP puro</strong>, <strong>MySQL</strong> via Docker, sem frameworks MVC, sem ORM. Código organizado em páginas simples com includes. Versionado no GitHub.</p>
+</section>
+
+<!-- PERFIS -->
+<section>
+  <h2>Perfis de Acesso</h2>
+  <div class="profiles">
+    <div class="profile-card">
+      <p class="role">Perfil 01</p>
+      <strong>Cliente</strong>
+      <ul>
+        <li>Cadastro com nome, email e senha</li>
+        <li>Recuperação de senha por email</li>
+        <li>Agenda, cancela e confirma horários</li>
+        <li>Vê portfólio dos barbeiros</li>
+        <li>Recebe notificações por email</li>
+      </ul>
+    </div>
+    <div class="profile-card">
+      <p class="role">Perfil 02</p>
+      <strong>Barbeiro</strong>
+      <ul>
+        <li>Escolhe serviços que oferece</li>
+        <li>Visualiza sua agenda</li>
+        <li>Bloqueia horários</li>
+        <li>Posta fotos do portfólio</li>
+        <li>Envia mensagens rápidas ao cliente</li>
+        <li>Sugere novos serviços via ticket</li>
+      </ul>
+    </div>
+    <div class="profile-card">
+      <p class="role">Perfil 03</p>
+      <strong>Admin</strong>
+      <ul>
+        <li>Cadastra barbeiros e carga horária</li>
+        <li>Gerencia catálogo de serviços e combos</li>
+        <li>Gerencia clientes (ver, excluir, resetar senha)</li>
+        <li>Gerencia todos os agendamentos</li>
+        <li>Aprova tickets de serviços</li>
+        <li>Cadastra mensagens rápidas</li>
+        <li>Pode ter múltiplos admins</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FLUXO DE AGENDAMENTO -->
+<section>
+  <h2>Fluxo de Agendamento</h2>
+
+  <p class="flow-label">Fluxo padrão:</p>
+  <div class="flow">
+    <div class="flow-step">Escolhe o serviço</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">Vê horários disponíveis</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">Escolhe o barbeiro</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">Confirma</div>
+  </div>
+
+  <p class="flow-label" style="margin-top:16px">Fluxo alternativo (barbeiro específico):</p>
+  <div class="flow">
+    <div class="flow-step">Escolhe o barbeiro</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">Escolhe o serviço</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">Vê horários disponíveis</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">Confirma</div>
+  </div>
+
+  <h3>Regras</h3>
+  <div class="rule-box"><strong>Antecedência máxima:</strong> 4 dias corridos a partir de hoje.</div>
+  <div class="rule-box"><strong>Confirmação de presença:</strong> obrigatória via link no email ou pelo site, até 2h antes. Sem confirmação, agendamento fica como "pendente".</div>
+  <div class="rule-box"><strong>Horários:</strong> gerados dinamicamente pela carga horária do barbeiro + duração do serviço. Base de 45min, variável conforme combo.</div>
+  <div class="rule-box"><strong>Sem disponibilidade:</strong> exibe mensagem, sem sugestão automática.</div>
+  <div class="rule-box"><strong>Cancelamento:</strong> cliente pode cancelar a qualquer momento. Ambos (cliente e barbeiro) recebem email de aviso.</div>
+</section>
+
+<!-- SERVIÇOS E COMBOS -->
+<section>
+  <h2>Serviços e Combos</h2>
+  <p>Serviços organizados por <strong>categorias</strong> (ex: cabelo, barba, sobrancelha). Cada serviço tem nome, categoria, descrição, preço, duração e galeria de fotos.</p>
+  <p><strong>Combos</strong> são cadastrados pelo admin: nome, lista de serviços incluídos, preço especial e tempo total definido manualmente.</p>
+  <p>Barbeiros escolhem quais serviços e combos do catálogo oferecem. Para sugerir um novo serviço, o barbeiro abre um <strong>ticket</strong> com todas as informações; o admin aprova e o serviço entra no catálogo.</p>
+</section>
+
+<!-- PORTFÓLIO -->
+<section>
+  <h2>Portfólio dos Barbeiros</h2>
+  <p>Cada barbeiro tem uma <strong>página de perfil pública</strong>, acessível pelo cliente antes de agendar. Nela ficam os serviços oferecidos e um feed de fotos dos cortes realizados, vinculadas a um serviço do catálogo.</p>
+  <p>As fotos vão direto ao ar, sem aprovação. O admin pode reaproveitar qualquer foto do portfólio na galeria oficial de um serviço.</p>
+</section>
+
+<!-- NOTIFICAÇÕES -->
+<section>
+  <h2>Notificações por Email</h2>
+  <table>
+    <thead>
+      <tr><th>Evento</th><th>Destinatário</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Agendamento criado</td><td><span class="badge badge-c">Cliente</span></td></tr>
+      <tr><td>Lembrete de agendamento</td><td><span class="badge badge-c">Cliente</span></td></tr>
+      <tr><td>Link de confirmação de presença</td><td><span class="badge badge-c">Cliente</span></td></tr>
+      <tr><td>Agendamento cancelado</td><td><span class="badge badge-c">Cliente</span></td></tr>
+      <tr><td>Mensagem rápida do barbeiro ou admin</td><td><span class="badge badge-c">Cliente</span></td></tr>
+      <tr><td>Ticket de serviço aprovado</td><td><span class="badge badge-b">Barbeiro</span></td></tr>
+      <tr><td>Novo ticket de serviço para avaliar</td><td><span class="badge badge-a">Admin</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ESTRUTURA DO PROJETO -->
+<section>
+  <h2>Estrutura de Arquivos</h2>
+  <div class="tree">
+<span class="dir">barbearia/</span>
+├── <span class="dir">docker/</span>
+│   ├── <span class="file">Dockerfile</span>          <span class="note"># imagem PHP + Apache</span>
+│   └── <span class="file">mysql/</span>
+│       └── <span class="file">init.sql</span>         <span class="note"># schema inicial</span>
+├── <span class="file">docker-compose.yml</span>
+│
+├── <span class="dir">public/</span>                    <span class="note"># document root</span>
+│   ├── <span class="file">index.php</span>            <span class="note"># home (serviços, categorias)</span>
+│   ├── <span class="file">barbeiro.php</span>         <span class="note"># perfil público do barbeiro</span>
+│   ├── <span class="file">agendar.php</span>          <span class="note"># fluxo de agendamento</span>
+│   ├── <span class="file">confirmar.php</span>        <span class="note"># confirmação via link de email</span>
+│   ├── <span class="file">login.php</span>
+│   ├── <span class="file">cadastro.php</span>
+│   ├── <span class="file">recuperar-senha.php</span>
+│   │
+│   ├── <span class="dir">cliente/</span>
+│   │   ├── <span class="file">dashboard.php</span>     <span class="note"># meus agendamentos</span>
+│   │   └── <span class="file">cancelar.php</span>
+│   │
+│   ├── <span class="dir">barbeiro/</span>
+│   │   ├── <span class="file">dashboard.php</span>     <span class="note"># agenda do barbeiro</span>
+│   │   ├── <span class="file">servicos.php</span>      <span class="note"># escolher serviços que oferece</span>
+│   │   ├── <span class="file">portfolio.php</span>     <span class="note"># gerenciar fotos</span>
+│   │   ├── <span class="file">bloquear.php</span>      <span class="note"># bloquear horários</span>
+│   │   └── <span class="file">ticket.php</span>        <span class="note"># sugerir novo serviço</span>
+│   │
+│   └── <span class="dir">admin/</span>
+│       ├── <span class="file">dashboard.php</span>
+│       ├── <span class="file">barbeiros.php</span>     <span class="note"># cadastro e carga horária</span>
+│       ├── <span class="file">servicos.php</span>      <span class="note"># catálogo de serviços</span>
+│       ├── <span class="file">combos.php</span>
+│       ├── <span class="file">clientes.php</span>
+│       ├── <span class="file">agendamentos.php</span>
+│       ├── <span class="file">tickets.php</span>       <span class="note"># aprovar sugestões</span>
+│       └── <span class="file">mensagens.php</span>     <span class="note"># mensagens rápidas</span>
+│
+├── <span class="dir">includes/</span>                  <span class="note"># includes globais</span>
+│   ├── <span class="file">db.php</span>               <span class="note"># conexão PDO</span>
+│   ├── <span class="file">auth.php</span>             <span class="note"># verificação de sessão/perfil</span>
+│   ├── <span class="file">mail.php</span>             <span class="note"># envio de email (PHPMailer)</span>
+│   ├── <span class="file">header.php</span>
+│   └── <span class="file">footer.php</span>
+│
+├── <span class="dir">uploads/</span>                   <span class="note"># fotos do portfólio e serviços</span>
+└── <span class="dir">.github/</span>
+    └── <span class="dir">workflows/</span>
+        └── <span class="file">ci.yml</span>            <span class="note"># (opcional) lint e validação</span>
+  </div>
+</section>
+
+<!-- DOCKER COMPOSE -->
+<section>
+  <h2>Docker Compose</h2>
+  <div class="code-block">
+<span class="comment"># docker-compose.yml</span>
+<span class="key">version</span>: <span class="val">'3.9'</span>
+
+<span class="key">services</span>:
+
+  <span class="key">app</span>:
+    <span class="key">build</span>: <span class="val">./docker</span>
+    <span class="key">container_name</span>: <span class="val">barbearia_app</span>
+    <span class="key">ports</span>:
+      - <span class="val">"8080:80"</span>
+    <span class="key">volumes</span>:
+      - <span class="val">./public:/var/www/html</span>
+      - <span class="val">./includes:/var/www/includes</span>
+      - <span class="val">./uploads:/var/www/html/uploads</span>
+    <span class="key">depends_on</span>:
+      - <span class="val">db</span>
+    <span class="key">environment</span>:
+      - <span class="val">DB_HOST=db</span>
+      - <span class="val">DB_NAME=barbearia</span>
+      - <span class="val">DB_USER=barbearia</span>
+      - <span class="val">DB_PASS=secret</span>
+
+  <span class="key">db</span>:
+    <span class="key">image</span>: <span class="val">mysql:8.0</span>
+    <span class="key">container_name</span>: <span class="val">barbearia_db</span>
+    <span class="key">restart</span>: <span class="val">always</span>
+    <span class="key">environment</span>:
+      - <span class="val">MYSQL_DATABASE=barbearia</span>
+      - <span class="val">MYSQL_USER=barbearia</span>
+      - <span class="val">MYSQL_PASSWORD=secret</span>
+      - <span class="val">MYSQL_ROOT_PASSWORD=rootsecret</span>
+    <span class="key">volumes</span>:
+      - <span class="val">db_data:/var/lib/mysql</span>
+      - <span class="val">./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql</span>
+    <span class="key">ports</span>:
+      - <span class="val">"3306:3306"</span>             <span class="comment"># expor só em dev</span>
+
+<span class="key">volumes</span>:
+  <span class="key">db_data</span>:
+  </div>
+</section>
+
+<!-- BANCO DE DADOS -->
+<section>
+  <h2>Banco de Dados — Tabelas Principais</h2>
+  <div class="tables-grid">
+    <div class="table-card">
+      <p class="tname">usuarios</p>
+      <p class="field pk">id</p>
+      <p class="field">nome</p>
+      <p class="field">email</p>
+      <p class="field">senha_hash</p>
+      <p class="field">perfil (enum)</p>
+      <p class="field">ativo</p>
+      <p class="field">criado_em</p>
+    </div>
+    <div class="table-card">
+      <p class="tname">categorias</p>
+      <p class="field pk">id</p>
+      <p class="field">nome</p>
+      <p class="field">descricao</p>
+    </div>
+    <div class="table-card">
+      <p class="tname">servicos</p>
+      <p class="field pk">id</p>
+      <p class="field">categoria_id</p>
+      <p class="field">nome</p>
+      <p class="field">descricao</p>
+      <p class="field">preco</p>
+      <p class="field">duracao_min</p>
+      <p class="field">ativo</p>
+    </div>
+    <div class="table-card">
+      <p class="tname">combos</p>
+      <p class="field pk">id</p>
+      <p class="field">nome</p>
+      <p class="field">preco</p>
+      <p class="field">duracao_min</p>
+      <p class="field">ativo</p>
+    </div>
+    <div class="table-card">
+      <p class="tname">combo_servicos</p>
+      <p class="field pk">combo_id</p>
+      <p class="field pk">servico_id</p>
+    </div>
+    <div class="table-card">
+      <p class="tname">barbeiro_servicos</p>
+      <p class="field pk">barbeiro_id</p>
+      <p class="field pk">servico_id</p>
+    </div>
+    <div class="table-card">
+      <p class="tname">carga_horaria</p>
+      <p class="field pk">id</p>
+      <p class="field">barbeiro_id</p>
+      <p class="field">dia_semana</p>
+      <p class="field">hora_inicio</p>
+      <p class="field">hora_fim</p>
+    </div>
+    <div class="table-card">
+      <p class="tname">bloqueios</p>
+      <p class="field pk">id</p>
+      <p class="field">barbeiro_id</p>
+      <p class="field">data</p>
+      <p class="field">hora_inicio</p>
+      <p class="field">hora_fim</p>
+    </div>
+    <div class="table-card">
+      <p class="tname">agendamentos</p>
+      <p class="field pk">id</p>
+      <p class="field">cliente_id</p>
+      <p class="field">barbeiro_id</p>
+      <p class="field">servico_id / combo_id</p>
+      <p class="field">data_hora</p>
+      <p class="field">status (enum)</p>
+      <p class="field">confirmado_em</p>
+      <p class="field">token_confirm</p>
+    </div>
+    <div class="table-card">
+      <p class="tname">portfolio</p>
+      <p class="field pk">id</p>
+      <p class="field">barbeiro_id</p>
+      <p class="field">servico_id</p>
+      <p class="field">foto_path</p>
+      <p class="field">criado_em</p>
+    </div>
+    <div class="table-card">
+      <p class="tname">tickets</p>
+      <p class="field pk">id</p>
+      <p class="field">barbeiro_id</p>
+      <p class="field">nome</p>
+      <p class="field">descricao</p>
+      <p class="field">preco</p>
+      <p class="field">duracao_min</p>
+      <p class="field">status (enum)</p>
+      <p class="field">criado_em</p>
+    </div>
+    <div class="table-card">
+      <p class="tname">mensagens_rapidas</p>
+      <p class="field pk">id</p>
+      <p class="field">titulo</p>
+      <p class="field">corpo</p>
+      <p class="field">ativo</p>
+    </div>
+  </div>
+</section>
+
+<!-- FASES DE DESENVOLVIMENTO -->
+<section>
+  <h2>Fases de Desenvolvimento</h2>
+  <div class="phases">
+    <div class="phase">
+      <div class="phase-num">1</div>
+      <div class="phase-content">
+        <strong>Infra e autenticação</strong>
+        <span>Docker Compose, init.sql, conexão PDO, sistema de login/cadastro/recuperação de senha, controle de sessão por perfil.</span>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">2</div>
+      <div class="phase-content">
+        <strong>Catálogo público</strong>
+        <span>Página inicial com categorias e serviços, galeria de fotos, página de perfil público do barbeiro com portfólio.</span>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">3</div>
+      <div class="phase-content">
+        <strong>Painel Admin — base</strong>
+        <span>CRUD de barbeiros e carga horária, CRUD de serviços, categorias e combos, gestão de clientes.</span>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">4</div>
+      <div class="phase-content">
+        <strong>Painel Barbeiro</strong>
+        <span>Seleção de serviços oferecidos, agenda própria, bloqueio de horários, portfólio, tickets e mensagens rápidas.</span>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">5</div>
+      <div class="phase-content">
+        <strong>Fluxo de agendamento</strong>
+        <span>Geração dinâmica de horários disponíveis, os dois fluxos (serviço → barbeiro e barbeiro → serviço), painel do cliente.</span>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">6</div>
+      <div class="phase-content">
+        <strong>Notificações e e-mails</strong>
+        <span>Integração PHPMailer, envio de confirmação, lembretes, cancelamentos e mensagens rápidas.</span>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">7</div>
+      <div class="phase-content">
+        <strong>Polimento e testes</strong>
+        <span>Revisão de UX, validações de formulário, segurança (prepared statements, CSRF básico), ajustes finais.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

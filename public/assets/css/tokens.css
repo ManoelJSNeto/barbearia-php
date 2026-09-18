@@ -1,0 +1,21 @@
+:root {
+  --bg:          #1A1208;
+  --surface:     #221608;
+  --surface-2:   #2C1F0E;
+  --border:      #3D2B0F;
+  --gold:        #B8922A;
+  --gold-dim:    #7A5E20;
+  --gold-pale:   #8C6E3F;
+  --faint:       #4A3820;
+  --text:        #E8DCC8;
+  --muted:       #9A8A72;
+  --ok:          #4A7C59;
+  --ok-bg:       #1C2E22;
+  --err:         #7C3A3A;
+  --err-bg:      #2E1A1A;
+  --font-display:'Playfair Display', Georgia, serif;
+  --font-body:   'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono:   'IBM Plex Mono', 'Courier New', monospace;
+  --max-content: 1100px;
+  --radius:      0px;
+}

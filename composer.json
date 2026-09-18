@@ -1,0 +1,8 @@
+{
+  "name": "navalha/barbearia",
+  "description": "Sistema de agendamento para barbearia",
+  "require": {"php": "^8.2", "phpmailer/phpmailer": "^6.9"},
+  "require-dev": {"phpunit/phpunit": "^10.5"},
+  "autoload": {"files": ["includes/config.php", "includes/db.php", "includes/auth.php"]},
+  "scripts": {"test": "phpunit tests"}
+}
