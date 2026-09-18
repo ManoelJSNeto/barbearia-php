@@ -6,15 +6,25 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 function usuario_logado(): ?array { return $_SESSION['usuario'] ?? null; }
-function exigir_login(): void { if (!usuario_logado()) { flash('err', 'Entre para acessar esta página.'); header('Location: /login.php'); exit; } }
+function exigir_login(): void {
+    if (!usuario_logado()) { flash('err', 'Entre para acessar esta página.'); header('Location: /login.php'); exit; }
+    // se o admin solicitou troca de senha, bloqueia acesso a qualquer página protegida
+    if (!empty($_SESSION['usuario']['force_reset'])) {
+        $atual = $_SERVER['REQUEST_URI'] ?? '';
+        if (!str_starts_with($atual, '/recuperar-senha.php') && !str_starts_with($atual, '/logout.php')) {
+            flash('err', 'Por segurança, redefina sua senha para continuar.');
+            header('Location: /recuperar-senha.php?force=1'); exit;
+        }
+    }
+}
 function exigir_perfil(string ...$perfis): void {
     exigir_login();
     if (!in_array(usuario_logado()['perfil'], $perfis, true)) {
         http_response_code(403);
         // Tenta os caminhos em ordem: container Docker, instalação local, DOCUMENT_ROOT
         $candidatos = [
-            dirname(__DIR__) . '/html/403.php',    // Docker: /var/www/html/403.php
             dirname(__DIR__) . '/public/403.php',  // local: project/public/403.php
+            dirname(__DIR__) . '/html/403.php',    // Docker: /var/www/html/403.php
             ($_SERVER['DOCUMENT_ROOT'] ?? '') . '/403.php',
         ];
         foreach ($candidatos as $p) {

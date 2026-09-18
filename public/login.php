@@ -15,24 +15,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senha = $_POST['senha'] ?? '';
 
     $stmt = db()->prepare(
-        'SELECT id, nome, email, senha_hash, perfil, ativo FROM usuarios WHERE email = ? LIMIT 1'
+        'SELECT id, nome, email, senha_hash, perfil, ativo, force_reset FROM usuarios WHERE email = ? LIMIT 1'
     );
     $stmt->execute([$email]);
     $u = $stmt->fetch();
 
     if (!$u || !$u['ativo'] || !password_verify($senha, $u['senha_hash'])) {
         flash('err', 'E-mail ou senha inválidos.');
-        header('Location: /login.php');
+        header('Location: /login.php' . (isset($_GET['next']) ? '?next=' . urlencode($_GET['next']) : ''));
         exit;
     }
 
     session_regenerate_id(true);
     $_SESSION['usuario'] = [
-        'id'     => (int)$u['id'],
-        'nome'   => $u['nome'],
-        'email'  => $u['email'],
-        'perfil' => $u['perfil'],
+        'id'          => (int)$u['id'],
+        'nome'        => $u['nome'],
+        'email'       => $u['email'],
+        'perfil'      => $u['perfil'],
+        'force_reset' => (bool)$u['force_reset'],
     ];
+
+    // força troca de senha se admin solicitou
+    if ($u['force_reset']) {
+        flash('err', 'Por segurança, redefina sua senha para continuar.');
+        header('Location: /recuperar-senha.php?force=1');
+        exit;
+    }
+
+    // redireciona para ?next= se veio de lá (ex: link de confirmação de agendamento)
+    $next = $_GET['next'] ?? '';
+    if ($next && str_starts_with($next, '/') && !str_starts_with($next, '//')) {
+        flash('ok', 'Bem-vindo de volta, ' . $u['nome'] . '.');
+        header('Location: ' . $next);
+        exit;
+    }
 
     flash('ok', 'Bem-vindo de volta, ' . $u['nome'] . '.');
     header('Location: ' . destino_por_perfil($u['perfil']));

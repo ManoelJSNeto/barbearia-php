@@ -48,6 +48,18 @@ $combos = $pdo->prepare(
 $combos->execute([$id]);
 $combos = $combos->fetchAll();
 
+// portfólio (últimas 10 fotos)
+$portfolio = $pdo->prepare(
+    "SELECT p.foto_path, p.legenda, s.nome AS servico_nome
+     FROM portfolio p
+     LEFT JOIN servicos s ON s.id = p.servico_id
+     WHERE p.barbeiro_id = ?
+     ORDER BY p.criado_em DESC
+     LIMIT 10"
+);
+$portfolio->execute([$id]);
+$portfolio = $portfolio->fetchAll();
+
 $titulo = $barbeiro['nome'];
 require __DIR__ . '/../includes/header.php';
 ?>
@@ -107,6 +119,29 @@ require __DIR__ . '/../includes/header.php';
     <div class="card">
       <p class="muted">Este barbeiro ainda não tem serviços configurados.</p>
     </div>
+  <?php endif; ?>
+
+  <!-- portfólio -->
+  <?php if ($portfolio): ?>
+  <div style="margin-top:52px;">
+    <div class="section-head">
+      <h2 style="font-size:1.4rem">Portfólio</h2>
+      <span class="section-head-line"></span>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:20px;">
+      <?php foreach ($portfolio as $i => $foto): ?>
+        <a href="<?= e($foto['foto_path']) ?>" target="_blank" rel="noopener"
+           style="display:block; aspect-ratio:1; overflow:hidden; background:var(--surface-2); border:1px solid var(--border);"
+           title="<?= e($foto['legenda'] ?: $foto['servico_nome'] ?: '') ?>">
+          <img src="<?= e($foto['foto_path']) ?>"
+               alt="<?= e($foto['legenda'] ?: ($foto['servico_nome'] ? 'Foto de ' . $foto['servico_nome'] : 'Foto do portfólio')) ?>"
+               style="width:100%; height:100%; object-fit:cover;"
+               loading="<?= $i < 3 ? 'eager' : 'lazy' ?>">
+        </a>
+      <?php endforeach; ?>
+    </div>
+  </div>
   <?php endif; ?>
 
 </div>

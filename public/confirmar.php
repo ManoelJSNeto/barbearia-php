@@ -3,11 +3,11 @@ declare(strict_types=1);
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 
-exigir_login();
-
 $token = trim($_GET['token'] ?? '');
 $pdo   = db();
 
+// Permite acesso sem login, mas redireciona para login com ?next= se necessário
+// O token é validado antes de exigir autenticação para que o link do e-mail funcione
 $stmt = $pdo->prepare(
     "SELECT a.id, a.status, a.data_hora, a.duracao_min, a.preco,
             a.confirmado_em, a.cliente_id,
@@ -23,9 +23,25 @@ $stmt = $pdo->prepare(
 $stmt->execute([$token]);
 $ag = $stmt->fetch();
 
-$usuario = usuario_logado();
+// Se o token não existe, 404 imediato (sem exigir login)
+if (!$ag) {
+    http_response_code(404);
+    $titulo = 'Link inválido';
+    require __DIR__ . '/../includes/header.php';
+    echo '<div style="padding:60px 0 80px"><p class="eyebrow">404</p><h1 style="font-size:1.8rem;margin-bottom:12px">Link inválido</h1><p class="muted">Este link não existe ou expirou.</p><p style="margin-top:20px"><a class="btn btn--ghost" href="/">Voltar ao início</a></p></div>';
+    require __DIR__ . '/../includes/footer.php';
+    exit;
+}
 
-if (!$ag || (int)$ag['cliente_id'] !== (int)$usuario['id']) {
+// Agora exige login — se não logado, redireciona para login com ?next= para voltar aqui
+$usuario = usuario_logado();
+if (!$usuario) {
+    flash('err', 'Entre na sua conta para confirmar o agendamento.');
+    header('Location: /login.php?next=' . urlencode('/confirmar.php?token=' . rawurlencode($token)));
+    exit;
+}
+
+if ((int)$ag['cliente_id'] !== (int)$usuario['id']) {
     http_response_code(404);
     $titulo = 'Link inválido';
     require __DIR__ . '/../includes/header.php';

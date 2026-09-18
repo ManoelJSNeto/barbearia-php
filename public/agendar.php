@@ -147,11 +147,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->beginTransaction();
 
             // revalida disponibilidade dentro da transação (anti race-condition)
+            // verifica sobreposição de intervalo, não apenas igualdade de data_hora
+            $novoFim = (new DateTimeImmutable($dataHora))->modify("+{$bk['duracao_min']} minutes")->format('Y-m-d H:i:s');
             $lock = $pdo->prepare(
                 "SELECT COUNT(*) FROM agendamentos
-                 WHERE barbeiro_id=? AND data_hora=? AND status IN ('pendente','confirmado')"
+                 WHERE barbeiro_id=? AND status IN ('pendente','confirmado')
+                   AND data_hora < ?
+                   AND TIMESTAMPADD(MINUTE, duracao_min, data_hora) > ?"
             );
-            $lock->execute([$bk['barbeiro_id'], $dataHora]);
+            $lock->execute([$bk['barbeiro_id'], $novoFim, $dataHora]);
             if ((int)$lock->fetchColumn() > 0) {
                 $pdo->rollBack();
                 flash('err', 'Este horário foi reservado agora mesmo por outra pessoa. Escolha outro.');

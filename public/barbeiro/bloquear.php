@@ -37,8 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "SELECT COUNT(*) FROM agendamentos
              WHERE barbeiro_id=? AND DATE(data_hora)=?
                AND status IN ('pendente','confirmado')
-               AND data_hora < ADDTIME(?, ?)
-               AND ADDTIME(data_hora, SEC_TO_TIME(duracao_min*60)) > ADDTIME(?, ?)"
+               AND data_hora < TIMESTAMP(?, ?)
+               AND TIMESTAMPADD(MINUTE, duracao_min, data_hora) > TIMESTAMP(?, ?)"
         );
         $chk->execute([$usuario['id'], $data, $data, $fim.':00', $data, $ini.':00']);
         $conflitos = (int)$chk->fetchColumn();
