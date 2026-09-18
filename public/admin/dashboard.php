@@ -96,6 +96,7 @@ require __DIR__ . '/../../includes/header.php';
   <div style="margin-top:36px; display:flex; gap:12px; flex-wrap:wrap;">
     <a class="btn btn--ghost" href="/admin/barbeiros.php">Gerenciar barbeiros</a>
     <a class="btn btn--ghost" href="/admin/servicos.php">Gerenciar serviços</a>
+    <a class="btn btn--ghost" href="/admin/configuracoes.php">Configurações SMTP</a>
   </div>
 
 </div>

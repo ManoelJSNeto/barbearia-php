@@ -34,6 +34,7 @@ $usuario = usuario_logado();
         <li><a href="/admin/agendamentos.php">Agenda</a></li>
         <li><a href="/admin/barbeiros.php">Barbeiros</a></li>
         <li><a href="/admin/servicos.php">Serviços</a></li>
+        <li><a href="/admin/configuracoes.php">Config</a></li>
         <li><a href="/logout.php" style="color:var(--muted)">Sair</a></li>
       <?php elseif ($usuario['perfil'] === 'barbeiro'): ?>
         <li><a href="/barbeiro/dashboard.php">Agenda</a></li>

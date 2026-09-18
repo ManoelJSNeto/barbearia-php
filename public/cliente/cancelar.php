@@ -44,6 +44,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
          WHERE id=?"
     )->execute([$ag['id']]);
 
+    // e-mail de cancelamento
+    require_once __DIR__ . '/../../includes/mail.php';
+    $agEmail = $pdo->prepare(
+        "SELECT a.data_hora, a.preco,
+                cli.nome AS cliente_nome, cli.email AS cliente_email,
+                bar.nome AS barbeiro_nome,
+                COALESCE(s.nome, c.nome) AS item_nome
+         FROM agendamentos a
+         JOIN usuarios cli ON cli.id = a.cliente_id
+         JOIN usuarios bar ON bar.id = a.barbeiro_id
+         LEFT JOIN servicos s ON s.id = a.servico_id
+         LEFT JOIN combos c   ON c.id = a.combo_id
+         WHERE a.id = ?"
+    );
+    $agEmail->execute([$ag['id']]);
+    $agDados = $agEmail->fetch();
+    if ($agDados) { mail_cancelamento($agDados, 'cliente'); }
+
     flash('ok', 'Agendamento cancelado.');
     header('Location: /cliente/dashboard.php'); exit;
 }

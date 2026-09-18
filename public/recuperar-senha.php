@@ -24,10 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  VALUES(?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))"
             )->execute([$u['id'], $token]);
 
-            // Link para usar enquanto o SMTP não está integrado
-            // flash('ok', 'Link: /resetar-senha.php?token=' . $token);
-
-            // Quando PHPMailer estiver integrado, enviar o link por e-mail aqui.
+            // envia e-mail com o link de redefinição
+            $nomeStmt = db()->prepare('SELECT nome FROM usuarios WHERE id=?');
+            $nomeStmt->execute([$u['id']]);
+            $nome = (string)($nomeStmt->fetchColumn() ?: '');
+            require_once __DIR__ . '/../includes/mail.php';
+            mail_recuperar_senha($email, $nome, $token);
         }
     }
 

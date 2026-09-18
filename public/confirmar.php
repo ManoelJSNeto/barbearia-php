@@ -57,6 +57,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         "UPDATE agendamentos SET status='confirmado', confirmado_em=NOW() WHERE id=?"
     );
     $upd->execute([$ag['id']]);
+
+    // e-mail de confirmação
+    require_once __DIR__ . '/../includes/mail.php';
+    $agEmail = $pdo->prepare(
+        "SELECT a.data_hora, a.preco,
+                cli.nome AS cliente_nome, cli.email AS cliente_email,
+                bar.nome AS barbeiro_nome,
+                COALESCE(s.nome, c.nome) AS item_nome
+         FROM agendamentos a
+         JOIN usuarios cli ON cli.id = a.cliente_id
+         JOIN usuarios bar ON bar.id = a.barbeiro_id
+         LEFT JOIN servicos s ON s.id = a.servico_id
+         LEFT JOIN combos c   ON c.id = a.combo_id
+         WHERE a.id = ?"
+    );
+    $agEmail->execute([$ag['id']]);
+    $agDados = $agEmail->fetch();
+    if ($agDados) { mail_confirmacao($agDados); }
+
     flash('ok', 'Presença confirmada! Te esperamos em ' . $dataHora->format('d/m') . ' às ' . $dataHora->format('H:i') . '.');
     header('Location: /cliente/dashboard.php'); exit;
 }
