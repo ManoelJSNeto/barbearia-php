@@ -37,10 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         session_regenerate_id(true);
         $_SESSION['usuario'] = [
-            'id'     => $id,
-            'nome'   => $nome,
-            'email'  => $email,
-            'perfil' => 'cliente',
+            'id'          => $id,
+            'nome'        => $nome,
+            'email'       => $email,
+            'perfil'      => 'cliente',
+            'force_reset' => 0,
         ];
 
         flash('ok', 'Conta criada. Agora escolha seu horário.');

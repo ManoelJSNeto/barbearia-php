@@ -49,14 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // e-mail ao barbeiro
         $corpo = "
-            <p>Olá, <strong style='color:#1C1814'>{$tk['barbeiro_nome']}</strong>.</p>
-            <p>Sua sugestão de serviço <strong>{$tk['nome']}</strong> foi <strong style='color:#3A7D5A'>aprovada</strong>.</p>
+            <p>Olá, <strong style='color:#1C1814'>" . e($tk['barbeiro_nome']) . "</strong>.</p>
+            <p>Sua sugestão de serviço <strong>" . e($tk['nome']) . "</strong> foi <strong style='color:#3A7D5A'>aprovada</strong>.</p>
             <p>O serviço já está disponível no seu painel e pode ser oferecido a clientes.</p>
-            " . ($obs ? "<p style='color:#6E6258'>Observação do admin: {$obs}</p>" : '') . "
+            " . ($obs ? "<p style='color:#6E6258'>Observação do admin: " . e($obs) . "</p>" : '') . "
         ";
-        enviar_email($tk['barbeiro_email'], $tk['barbeiro_nome'], 'Ticket aprovado — ' . $tk['nome'], $corpo);
+        enviar_email($tk['barbeiro_email'], $tk['barbeiro_nome'], 'Ticket aprovado — ' . e($tk['nome']), $corpo);
 
-        flash('ok', "Serviço \"{$tk['nome']}\" aprovado e associado ao barbeiro.");
+        flash('ok', "Serviço \"" . e($tk['nome']) . "\" aprovado e associado ao barbeiro.");
         header('Location: /admin/tickets.php'); exit;
     }
 
@@ -66,12 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         )->execute([$obs, $ticket_id]);
 
         $corpo = "
-            <p>Olá, <strong style='color:#1C1814'>{$tk['barbeiro_nome']}</strong>.</p>
-            <p>Sua sugestão de serviço <strong>{$tk['nome']}</strong> foi <strong style='color:#B04040'>recusada</strong>.</p>
-            " . ($obs ? "<p style='color:#6E6258'>Motivo: {$obs}</p>" : '') . "
+            <p>Olá, <strong style='color:#1C1814'>" . e($tk['barbeiro_nome']) . "</strong>.</p>
+            <p>Sua sugestão de serviço <strong>" . e($tk['nome']) . "</strong> foi <strong style='color:#B04040'>recusada</strong>.</p>
+            " . ($obs ? "<p style='color:#6E6258'>Motivo: " . e($obs) . "</p>" : '') . "
             <p style='color:#6E6258;font-size:13px;'>Você pode enviar uma nova sugestão com ajustes pelo seu painel.</p>
         ";
-        enviar_email($tk['barbeiro_email'], $tk['barbeiro_nome'], 'Ticket recusado — ' . $tk['nome'], $corpo);
+        enviar_email($tk['barbeiro_email'], $tk['barbeiro_nome'], 'Ticket recusado — ' . e($tk['nome']), $corpo);
 
         flash('ok', "Ticket recusado.");
         header('Location: /admin/tickets.php'); exit;

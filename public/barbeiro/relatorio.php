@@ -203,7 +203,7 @@ require __DIR__ . '/../../includes/header.php';
       <p class="stat-value" style="font-size:1.4rem;">
         R$ <?= number_format((float)$res['receita_total'], 2, ',', '.') ?>
       </p>
-      <p class="stat-sub">confirmados + pendentes</p>
+      <p class="stat-sub">pendentes + confirmados</p>
     </div>
   </div>
 

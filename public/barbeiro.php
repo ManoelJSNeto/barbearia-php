@@ -49,6 +49,7 @@ $combos->execute([$id]);
 $combos = $combos->fetchAll();
 
 // capa dos serviços (foto com menor ordem, ou mais antiga)
+$srvIds = array_column($servicos, 'id');
 $fotosCapas = [];
 if ($srvIds) {
     $placeholders = implode(',', array_fill(0, count($srvIds), '?'));

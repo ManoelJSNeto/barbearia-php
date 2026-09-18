@@ -160,7 +160,7 @@ function mail_agendamento_criado(array $ag, string $tokenConfirm): bool
           <tr><td style='padding:12px 16px;color:#9A8A72;font-size:13px;'>Valor</td>
               <td style='padding:12px 16px;color:#B8922A;font-weight:600;'>R\$ " . number_format((float)$ag['preco'], 2, ',', '.') . "</td></tr>
         </table>
-        <p style='margin-bottom:8px;'>Confirme sua presença clicando no botão abaixo (até 2h antes do horário):</p>
+      <p style='margin-bottom:8px;'>Confirme sua presença clicando no botão abaixo (até 2h antes do horário):</p>
         <p>
           <a href='{$linkConf}' style='display:inline-block;background:#B8922A;color:#1A1208;padding:12px 24px;font-weight:600;text-decoration:none;font-size:14px;'>Confirmar presença</a>
         </p>
