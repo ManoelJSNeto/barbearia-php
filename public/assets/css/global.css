@@ -713,6 +713,199 @@ footer {
   margin: 0;
 }
 
+/* ── HOME PAGE ─────────────────────────────────────────────── */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 48px;
+  align-items: center;
+  padding: 72px 0 64px;
+  border-bottom: 1px solid var(--border);
+}
+.hero-title {
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  line-height: 1.1;
+  margin-bottom: 18px;
+}
+.hero-lead {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 46ch;
+  margin-bottom: 28px;
+}
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.hero-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.06);
+}
+.hero-card-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.hero-barber {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.hero-barber:last-of-type { border-bottom: none; }
+.hero-barber-avatar {
+  width: 34px;
+  height: 34px;
+  background: var(--accent-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: .9rem;
+  color: var(--accent);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.hero-barber-info {
+  flex: 1;
+  min-width: 0;
+}
+.hero-barber-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+.hero-barber-spec {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* stats strip */
+.home-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  margin-top: -1px;
+}
+.home-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+.home-stat:last-child { border-right: none; }
+.home-stat-n {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.home-stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* barbers grid (home) */
+.barbers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.barber-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow .15s, border-color .15s;
+}
+.barber-card:hover {
+  border-color: var(--border-dark);
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+.barber-card-avatar {
+  width: 52px;
+  height: 52px;
+  background: var(--accent-light);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+.barber-card-body { flex: 1; }
+.barber-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.barber-card-spec {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.barber-card-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* CTA final */
+.home-cta {
+  background: var(--accent);
+  padding: 64px 40px;
+  text-align: center;
+  margin: 60px -40px -1px;
+}
+.home-cta-title {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  color: #fff;
+  margin-bottom: 12px;
+}
+.home-cta-sub {
+  color: rgba(255,255,255,.75);
+  font-size: 15px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; gap: 32px; padding: 48px 0 40px; }
+  .hero-card { display: none; }
+  .home-stats { grid-template-columns: repeat(2, 1fr); }
+  .home-stat:nth-child(2) { border-right: none; }
+  .home-cta { padding: 48px 18px; margin: 40px -18px -1px; }
+}
+@media (max-width: 480px) {
+  .home-stats { grid-template-columns: 1fr 1fr; }
+  .barbers-grid { grid-template-columns: 1fr; }
+}
+
 /* ── PANEL LAYOUT ──────────────────────────────────────────── */
 /*
  * .panel         — wrapper principal de cada página de painel

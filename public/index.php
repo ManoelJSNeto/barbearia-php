@@ -19,7 +19,8 @@ $combos = $pdo->query(
 
 $barbeiros = $pdo->query(
     "SELECT u.id, u.nome,
-            GROUP_CONCAT(DISTINCT s.nome ORDER BY s.nome SEPARATOR ', ') AS especialidades
+            GROUP_CONCAT(DISTINCT s.nome ORDER BY s.nome SEPARATOR ', ') AS especialidades,
+            COUNT(DISTINCT bs.servico_id) AS total_servicos
      FROM usuarios u
      LEFT JOIN barbeiro_servicos bs ON bs.barbeiro_id = u.id
      LEFT JOIN servicos s ON s.id = bs.servico_id AND s.ativo = 1
@@ -28,110 +29,124 @@ $barbeiros = $pdo->query(
      ORDER BY u.nome"
 )->fetchAll();
 
-$titulo = 'Barbearia tradicional';
+$logado = usuario_logado();
+$titulo = 'Navalha — Barbearia tradicional';
 require __DIR__ . '/../includes/header.php';
 ?>
 
-<!-- ── HERO ─────────────────────────────────────────────────── -->
-<section style="padding: 64px 0 56px; border-bottom: 1px solid var(--border);">
-  <div style="display:grid; grid-template-columns:1fr auto; gap:48px; align-items:center;">
-
-    <div>
-      <p class="eyebrow">Barbearia tradicional</p>
-      <h1 style="margin-bottom:16px; max-width:14ch;">Um corte feito do jeito certo.</h1>
-      <p class="lead" style="max-width:44ch; margin-bottom:28px;">
-        Escolha o serviço, veja os barbeiros disponíveis e marque seu horário sem complicação.
-        Sem fila, sem surpresa no preço.
-      </p>
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <a class="btn" href="<?= usuario_logado() ? '/agendar.php' : '/cadastro.php' ?>">Agendar agora</a>
-        <a class="btn btn--ghost" href="#servicos">Ver serviços</a>
-      </div>
+<!-- ── HERO ──────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-content">
+    <p class="eyebrow">Barbearia tradicional</p>
+    <h1 class="hero-title">Um corte feito<br>do jeito certo.</h1>
+    <p class="hero-lead">
+      Escolha o serviço, veja os barbeiros disponíveis e marque seu horário em menos de um minuto.
+      Sem fila, sem surpresa no preço.
+    </p>
+    <div class="hero-actions">
+      <a class="btn" href="<?= $logado ? '/agendar.php' : '/cadastro.php' ?>">
+        <?= $logado ? 'Agendar agora' : 'Criar conta e agendar' ?>
+      </a>
+      <a class="btn btn--ghost" href="#servicos">Ver serviços</a>
     </div>
-
-    <aside style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; min-width:240px; max-width:280px; box-shadow:0 2px 12px rgba(0,0,0,.06);">
-      <p style="font-size:11px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin-bottom:14px;">
-        Profissionais disponíveis
-      </p>
-      <?php if ($barbeiros): ?>
-        <?php foreach (array_slice($barbeiros, 0, 3) as $b): ?>
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--border);">
-            <div style="display:flex; align-items:center; gap:10px;">
-              <div style="width:32px; height:32px; background:var(--accent-light); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:.9rem; color:var(--accent); font-weight:600; flex-shrink:0;">
-                <?= e(mb_strtoupper(mb_substr($b['nome'], 0, 1))) ?>
-              </div>
-              <span style="font-size:13px; color:var(--text);"><?= e(explode(' ', $b['nome'])[0]) ?></span>
-            </div>
-            <a href="/agendar.php?barbeiro=<?= (int)$b['id'] ?>" class="btn btn--outline btn--xs">Agendar</a>
-          </div>
-        <?php endforeach; ?>
-      <?php else: ?>
-        <p style="font-size:13px; color:var(--muted);">Em breve.</p>
-      <?php endif; ?>
-      <div style="margin-top:14px;">
-        <a class="btn btn--full btn--sm" href="<?= usuario_logado() ? '/agendar.php' : '/cadastro.php' ?>">
-          Ver todos os horários
-        </a>
-      </div>
-    </aside>
-
   </div>
+
+  <aside class="hero-card">
+    <p class="hero-card-label">Profissionais</p>
+    <?php if ($barbeiros): ?>
+      <?php foreach (array_slice($barbeiros, 0, 4) as $b): ?>
+        <div class="hero-barber">
+          <div class="hero-barber-avatar">
+            <?= e(mb_strtoupper(mb_substr($b['nome'], 0, 1))) ?>
+          </div>
+          <div class="hero-barber-info">
+            <span class="hero-barber-name"><?= e(explode(' ', $b['nome'])[0]) ?></span>
+            <span class="hero-barber-spec"><?= (int)$b['total_servicos'] ?> serviço<?= $b['total_servicos'] != 1 ? 's' : '' ?></span>
+          </div>
+          <a class="btn btn--outline btn--xs" href="/agendar.php?barbeiro=<?= (int)$b['id'] ?>">Agendar</a>
+        </div>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <p style="font-size:13px; color:var(--muted); padding:12px 0;">Em breve.</p>
+    <?php endif; ?>
+    <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
+      <a class="btn btn--full btn--sm" href="<?= $logado ? '/agendar.php' : '/cadastro.php' ?>">
+        Ver todos os horários disponíveis
+      </a>
+    </div>
+  </aside>
 </section>
 
-<style>
-@media (max-width: 720px) {
-  section:first-of-type > div { grid-template-columns: 1fr !important; }
-  section:first-of-type aside { display: none; }
-}
-</style>
+<!-- ── NÚMEROS ────────────────────────────────────────────────── -->
+<section class="home-stats">
+  <div class="home-stat">
+    <span class="home-stat-n"><?= count($servicos) + count($combos) ?></span>
+    <span class="home-stat-label">Serviços &amp; combos</span>
+  </div>
+  <div class="home-stat">
+    <span class="home-stat-n"><?= count($barbeiros) ?></span>
+    <span class="home-stat-label">Barbeiro<?= count($barbeiros) != 1 ? 's' : '' ?> profissional<?= count($barbeiros) != 1 ? 'is' : '' ?></span>
+  </div>
+  <div class="home-stat">
+    <span class="home-stat-n">4</span>
+    <span class="home-stat-label">Dias de agenda abertos</span>
+  </div>
+  <div class="home-stat">
+    <span class="home-stat-n">2h</span>
+    <span class="home-stat-label">Antecedência para cancelar</span>
+  </div>
+</section>
 
 <!-- ── SERVIÇOS ──────────────────────────────────────────────── -->
 <section class="section" id="servicos">
   <div class="section-head">
     <h2>Serviços</h2>
     <span class="section-head-line"></span>
-  </div>
-
-  <div class="services-grid">
-    <?php foreach ($servicos as $s): ?>
-      <div class="service-card">
-        <p class="service-cat"><?= e($s['categoria']) ?></p>
-        <p class="service-name"><?= e($s['nome']) ?></p>
-        <?php if ($s['descricao']): ?>
-          <p class="service-desc"><?= e($s['descricao']) ?></p>
-        <?php endif; ?>
-        <div class="service-meta">
-          <span class="service-price">R$ <?= number_format((float)$s['preco'], 2, ',', '.') ?></span>
-          <span class="service-time"><?= (int)$s['duracao_min'] ?> min</span>
-        </div>
-      </div>
-    <?php endforeach; ?>
-
-    <?php foreach ($combos as $c): ?>
-      <div class="service-card service-card--combo">
-        <p class="service-cat">Combo</p>
-        <p class="service-name"><?= e($c['nome']) ?></p>
-        <?php if ($c['descricao']): ?>
-          <p class="service-desc"><?= e($c['descricao']) ?></p>
-        <?php endif; ?>
-        <div class="service-meta">
-          <span class="service-price">R$ <?= number_format((float)$c['preco'], 2, ',', '.') ?></span>
-          <span class="service-time"><?= (int)$c['duracao_min'] ?> min</span>
-        </div>
-      </div>
-    <?php endforeach; ?>
-
-    <?php if (!$servicos && !$combos): ?>
-      <div class="service-card" style="grid-column:1/-1; text-align:center;">
-        <p style="color:var(--muted);">Nenhum serviço cadastrado ainda.</p>
-      </div>
+    <?php if ($logado): ?>
+      <a class="btn btn--sm" href="/agendar.php" style="margin-left:auto;">Agendar agora</a>
     <?php endif; ?>
   </div>
 
   <?php if ($servicos || $combos): ?>
-    <p style="margin-top:20px;">
-      <a class="btn" href="<?= usuario_logado() ? '/agendar.php' : '/cadastro.php' ?>">Agendar um serviço</a>
+    <div class="services-grid">
+      <?php foreach ($servicos as $s): ?>
+        <div class="service-card">
+          <p class="service-cat"><?= e($s['categoria']) ?></p>
+          <p class="service-name"><?= e($s['nome']) ?></p>
+          <?php if ($s['descricao']): ?>
+            <p class="service-desc"><?= e($s['descricao']) ?></p>
+          <?php endif; ?>
+          <div class="service-meta">
+            <span class="service-price">R$ <?= number_format((float)$s['preco'], 2, ',', '.') ?></span>
+            <span class="service-time"><?= (int)$s['duracao_min'] ?> min</span>
+          </div>
+        </div>
+      <?php endforeach; ?>
+
+      <?php foreach ($combos as $c): ?>
+        <div class="service-card service-card--combo">
+          <p class="service-cat">Combo</p>
+          <p class="service-name"><?= e($c['nome']) ?></p>
+          <?php if ($c['descricao']): ?>
+            <p class="service-desc"><?= e($c['descricao']) ?></p>
+          <?php endif; ?>
+          <div class="service-meta">
+            <span class="service-price">R$ <?= number_format((float)$c['preco'], 2, ',', '.') ?></span>
+            <span class="service-time"><?= (int)$c['duracao_min'] ?> min</span>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+
+    <p style="margin-top:24px;">
+      <a class="btn" href="<?= $logado ? '/agendar.php' : '/cadastro.php' ?>">
+        <?= $logado ? 'Agendar um serviço' : 'Criar conta para agendar' ?>
+      </a>
     </p>
+  <?php else: ?>
+    <div class="card">
+      <p class="muted">Nenhum serviço cadastrado ainda. Volte em breve.</p>
+    </div>
   <?php endif; ?>
 </section>
 
@@ -140,21 +155,30 @@ require __DIR__ . '/../includes/header.php';
 <!-- ── BARBEIROS ─────────────────────────────────────────────── -->
 <section class="section" id="barbeiros">
   <div class="section-head">
-    <h2>Barbeiros</h2>
+    <h2>Nossa equipe</h2>
     <span class="section-head-line"></span>
   </div>
 
   <?php if ($barbeiros): ?>
-    <div class="barbers-list">
+    <div class="barbers-grid">
       <?php foreach ($barbeiros as $b): ?>
-        <a class="barber-row" href="/agendar.php?barbeiro=<?= (int)$b['id'] ?>">
-          <div class="barber-avatar"><?= e(mb_strtoupper(mb_substr($b['nome'], 0, 1))) ?></div>
-          <div>
-            <p class="barber-name"><?= e($b['nome']) ?></p>
-            <p class="barber-spec"><?= e($b['especialidades'] ?: 'Especialidades em breve') ?></p>
+        <div class="barber-card">
+          <div class="barber-card-avatar">
+            <?= e(mb_strtoupper(mb_substr($b['nome'], 0, 1))) ?>
           </div>
-          <span class="barber-arrow">›</span>
-        </a>
+          <div class="barber-card-body">
+            <p class="barber-card-name"><?= e($b['nome']) ?></p>
+            <p class="barber-card-spec">
+              <?= $b['especialidades']
+                ? e(mb_strimwidth($b['especialidades'], 0, 60, '…'))
+                : 'Especialidades em breve' ?>
+            </p>
+          </div>
+          <div class="barber-card-actions">
+            <a class="btn btn--ghost btn--sm" href="/barbeiro.php?id=<?= (int)$b['id'] ?>">Ver perfil</a>
+            <a class="btn btn--sm" href="/agendar.php?barbeiro=<?= (int)$b['id'] ?>">Agendar</a>
+          </div>
+        </div>
       <?php endforeach; ?>
     </div>
   <?php else: ?>
@@ -175,24 +199,37 @@ require __DIR__ . '/../includes/header.php';
     <div class="step">
       <p class="step-n">1</p>
       <p class="step-title">Escolha o serviço</p>
-      <p class="step-desc">Veja os serviços disponíveis com preço e duração. Combos têm desconto automático.</p>
+      <p class="step-desc">Veja os serviços disponíveis com preço e duração. Combos oferecem mais por menos.</p>
     </div>
     <div class="step">
       <p class="step-n">2</p>
-      <p class="step-title">Veja os horários</p>
-      <p class="step-desc">Só aparecem os horários realmente livres, baseados na agenda dos barbeiros.</p>
+      <p class="step-title">Escolha o barbeiro</p>
+      <p class="step-desc">Pode começar pelo barbeiro preferido ou pelo serviço — do seu jeito.</p>
     </div>
     <div class="step">
       <p class="step-n">3</p>
-      <p class="step-title">Escolha o barbeiro</p>
-      <p class="step-desc">Ou comece pelo barbeiro se preferir. Sem surpresas de preço ou tempo.</p>
+      <p class="step-title">Veja os horários livres</p>
+      <p class="step-desc">Só aparecem horários realmente disponíveis. Sem surpresas na hora de chegar.</p>
     </div>
     <div class="step">
       <p class="step-n">4</p>
       <p class="step-title">Confirme presença</p>
-      <p class="step-desc">Confirme na hora ou pelo e-mail até 2h antes do horário marcado.</p>
+      <p class="step-desc">Confirme na hora ou pelo link no e-mail. Pode cancelar até 2h antes.</p>
     </div>
   </div>
 </section>
+
+<!-- ── CTA FINAL ──────────────────────────────────────────────── -->
+<?php if (!$logado): ?>
+<section class="home-cta">
+  <p class="eyebrow" style="color:var(--accent-light)">Pronto para começar?</p>
+  <h2 class="home-cta-title">Reserve seu horário agora.</h2>
+  <p class="home-cta-sub">Crie sua conta em segundos e agende sem precisar ligar.</p>
+  <div class="hero-actions" style="justify-content:center;">
+    <a class="btn" href="/cadastro.php" style="background:#fff; color:var(--accent); border-color:#fff;">Criar conta grátis</a>
+    <a class="btn btn--ghost" href="/login.php" style="color:#fff; border-color:rgba(255,255,255,.4);">Já tenho conta</a>
+  </div>
+</section>
+<?php endif; ?>
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>
