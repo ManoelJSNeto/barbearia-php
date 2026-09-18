@@ -8,10 +8,14 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 function usuario_logado(): ?array { return $_SESSION['usuario'] ?? null; }
 function exigir_login(): void {
     if (!usuario_logado()) { flash('err', 'Entre para acessar esta página.'); header('Location: /login.php'); exit; }
-    // se o admin solicitou troca de senha, bloqueia acesso a qualquer página protegida
     if (!empty($_SESSION['usuario']['force_reset'])) {
         $atual = $_SERVER['REQUEST_URI'] ?? '';
-        if (!str_starts_with($atual, '/recuperar-senha.php') && !str_starts_with($atual, '/logout.php')) {
+        $whitelist = ['/recuperar-senha.php', '/resetar-senha.php', '/logout.php'];
+        $permitido = false;
+        foreach ($whitelist as $w) {
+            if (str_starts_with($atual, $w)) { $permitido = true; break; }
+        }
+        if (!$permitido) {
             flash('err', 'Por segurança, redefina sua senha para continuar.');
             header('Location: /recuperar-senha.php?force=1'); exit;
         }

@@ -8,7 +8,6 @@ services:
       - ./public:/var/www/public
       - ./includes:/var/www/includes
       - ./uploads:/var/www/public/uploads
-      - ./vendor:/var/www/vendor
     environment:
       DB_HOST: db
       DB_PORT: 3306

@@ -52,17 +52,16 @@ switch ($periodo) {
 // ── Resumo ────────────────────────────────────────────────────
 $resumo = $pdo->prepare(
     "SELECT
-        COUNT(*)                                          AS total_atendimentos,
-        COALESCE(SUM(preco), 0)                           AS receita_total,
-        COALESCE(SUM(CASE WHEN status='confirmado' THEN preco END), 0) AS receita_confirmada,
-        COUNT(CASE WHEN status='confirmado'    THEN 1 END) AS confirmados,
-        COUNT(CASE WHEN status='pendente'      THEN 1 END) AS pendentes,
-        COUNT(CASE WHEN status='cancelado'     THEN 1 END) AS cancelados,
-        COUNT(CASE WHEN status='nao_confirmado' THEN 1 END) AS nao_confirmados
+        COUNT(*)                                                                   AS total_atendimentos,
+        COALESCE(SUM(CASE WHEN status='confirmado' THEN preco END), 0)             AS receita_confirmada,
+        COALESCE(SUM(CASE WHEN status IN ('pendente','confirmado') THEN preco END), 0) AS receita_total,
+        COUNT(CASE WHEN status='confirmado'     THEN 1 END)                        AS confirmados,
+        COUNT(CASE WHEN status='pendente'       THEN 1 END)                        AS pendentes,
+        COUNT(CASE WHEN status='cancelado'      THEN 1 END)                        AS cancelados,
+        COUNT(CASE WHEN status='nao_confirmado' THEN 1 END)                        AS nao_confirmados
      FROM agendamentos
      WHERE barbeiro_id = ?
-       AND DATE(data_hora) BETWEEN ? AND ?
-       AND status != 'cancelado'"
+       AND DATE(data_hora) BETWEEN ? AND ?"
 );
 $resumo->execute([$usuario['id'], $de, $ate]);
 $res = $resumo->fetch();
@@ -77,7 +76,7 @@ $porServico = $pdo->prepare(
      LEFT JOIN combos   c ON c.id = a.combo_id
      WHERE a.barbeiro_id = ?
        AND DATE(a.data_hora) BETWEEN ? AND ?
-       AND a.status IN ('pendente','confirmado')
+       AND a.status IN ('pendente','confirmado','nao_confirmado')
      GROUP BY item_nome
      ORDER BY receita DESC"
 );
@@ -92,7 +91,7 @@ $porDia = $pdo->prepare(
      FROM agendamentos
      WHERE barbeiro_id = ?
        AND DATE(data_hora) BETWEEN ? AND ?
-       AND status IN ('pendente','confirmado')
+       AND status IN ('pendente','confirmado','nao_confirmado')
      GROUP BY dia
      ORDER BY dia ASC"
 );

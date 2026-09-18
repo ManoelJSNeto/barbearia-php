@@ -29,7 +29,7 @@ if ($forcado) {
             ->execute([password_hash($nova, PASSWORD_BCRYPT, ['cost' => 12]), $usuario['id']]);
 
         // atualiza a sessão para remover o flag
-        $_SESSION['usuario']['force_reset'] = false;
+        $_SESSION['usuario']['force_reset'] = 0;
 
         flash('ok', 'Senha alterada com sucesso.');
         header('Location: ' . destino_por_perfil($usuario['perfil'])); exit;

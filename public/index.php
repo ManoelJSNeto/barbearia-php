@@ -17,11 +17,16 @@ $combos = $pdo->query(
     'SELECT id, nome, descricao, preco, duracao_min FROM combos WHERE ativo = 1 ORDER BY nome'
 )->fetchAll();
 
-// capa de cada serviço (primeira foto)
+// capa de cada serviço (foto com menor ordem, ou mais antiga)
 $fotosCapas = [];
 foreach ($pdo->query(
-    'SELECT servico_id, MIN(foto_path) AS foto_path
-     FROM servico_fotos GROUP BY servico_id'
+    'SELECT sf.servico_id, sf.foto_path
+     FROM servico_fotos sf
+     INNER JOIN (
+         SELECT servico_id, MIN(ordem * 100000 + id) AS rank_min
+         FROM servico_fotos GROUP BY servico_id
+     ) r ON r.servico_id = sf.servico_id
+         AND (sf.ordem * 100000 + sf.id) = r.rank_min'
 )->fetchAll() as $f) {
     $fotosCapas[$f['servico_id']] = $f['foto_path'];
 }

@@ -48,15 +48,19 @@ $combos = $pdo->prepare(
 $combos->execute([$id]);
 $combos = $combos->fetchAll();
 
-// capa dos serviços
-$srvIds = array_column($servicos, 'id');
+// capa dos serviços (foto com menor ordem, ou mais antiga)
 $fotosCapas = [];
 if ($srvIds) {
     $placeholders = implode(',', array_fill(0, count($srvIds), '?'));
     $fstmt = $pdo->prepare(
-        "SELECT servico_id, MIN(foto_path) AS foto_path
-         FROM servico_fotos WHERE servico_id IN ($placeholders)
-         GROUP BY servico_id"
+        "SELECT sf.servico_id, sf.foto_path
+         FROM servico_fotos sf
+         INNER JOIN (
+             SELECT servico_id, MIN(ordem * 100000 + id) AS rank_min
+             FROM servico_fotos WHERE servico_id IN ($placeholders)
+             GROUP BY servico_id
+         ) r ON r.servico_id = sf.servico_id
+             AND (sf.ordem * 100000 + sf.id) = r.rank_min"
     );
     $fstmt->execute($srvIds);
     foreach ($fstmt->fetchAll() as $f) {
@@ -153,10 +157,10 @@ require __DIR__ . '/../includes/header.php';
 
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:20px;">
       <?php foreach ($portfolio as $i => $foto): ?>
-        <a href="<?= e($foto['foto_path']) ?>" target="_blank" rel="noopener"
+        <a href="/uploads/<?= e($foto['foto_path']) ?>" target="_blank" rel="noopener"
            style="display:block; aspect-ratio:1; overflow:hidden; background:var(--surface-2); border:1px solid var(--border);"
            title="<?= e($foto['legenda'] ?: $foto['servico_nome'] ?: '') ?>">
-          <img src="<?= e($foto['foto_path']) ?>"
+          <img src="/uploads/<?= e($foto['foto_path']) ?>"
                alt="<?= e($foto['legenda'] ?: ($foto['servico_nome'] ? 'Foto de ' . $foto['servico_nome'] : 'Foto do portfólio')) ?>"
                style="width:100%; height:100%; object-fit:cover;"
                loading="<?= $i < 3 ? 'eager' : 'lazy' ?>">
