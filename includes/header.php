@@ -19,40 +19,67 @@ $usuario = usuario_logado();
 
 <nav class="nav">
   <div class="nav-inner">
+
     <a class="brand" href="/">
       <span class="brand-word">Navalha</span>
       <span class="brand-dot"></span>
     </a>
-    <ul class="nav-links">
+
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false">&#9776;</button>
+
+    <ul class="nav-links" id="nav-links" role="list">
+
       <?php if (!$usuario): ?>
         <li><a href="/#servicos">Serviços</a></li>
         <li><a href="/#barbeiros">Barbeiros</a></li>
+        <li><span class="nav-sep" aria-hidden="true"></span></li>
         <li><a href="/login.php">Entrar</a></li>
         <li><a class="nav-btn" href="/cadastro.php">Criar conta</a></li>
+
       <?php elseif ($usuario['perfil'] === 'admin'): ?>
         <li><a href="/admin/dashboard.php">Dashboard</a></li>
         <li><a href="/admin/agendamentos.php">Agenda</a></li>
         <li><a href="/admin/barbeiros.php">Barbeiros</a></li>
         <li><a href="/admin/servicos.php">Serviços</a></li>
         <li><a href="/admin/configuracoes.php">Config</a></li>
-        <li><a href="/logout.php" style="color:var(--muted)">Sair</a></li>
+        <li><span class="nav-sep" aria-hidden="true"></span></li>
+        <li><a href="/logout.php" class="nav-exit">Sair</a></li>
+
       <?php elseif ($usuario['perfil'] === 'barbeiro'): ?>
         <li><a href="/barbeiro/dashboard.php">Agenda</a></li>
         <li><a href="/barbeiro/servicos.php">Serviços</a></li>
         <li><a href="/barbeiro/bloquear.php">Bloqueios</a></li>
-        <li><a href="/logout.php" style="color:var(--muted)">Sair</a></li>
+        <li><span class="nav-sep" aria-hidden="true"></span></li>
+        <li><a href="/logout.php" class="nav-exit">Sair</a></li>
+
       <?php else: ?>
-        <li><a href="/agendar.php" class="nav-btn">Agendar</a></li>
+        <li><a class="nav-btn" href="/agendar.php">Agendar</a></li>
         <li><a href="/cliente/dashboard.php">Meus agendamentos</a></li>
-        <li><a href="/logout.php" style="color:var(--muted)">Sair</a></li>
+        <li><span class="nav-sep" aria-hidden="true"></span></li>
+        <li><a href="/logout.php" class="nav-exit">Sair</a></li>
       <?php endif; ?>
+
     </ul>
   </div>
 </nav>
 
+<script>
+(function() {
+  var btn = document.getElementById('nav-toggle');
+  var menu = document.getElementById('nav-links');
+  if (btn && menu) {
+    btn.addEventListener('click', function() {
+      var open = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.innerHTML = open ? '&#10005;' : '&#9776;';
+    });
+  }
+})();
+</script>
+
 <div class="wrap">
 <?php if (!empty($_SESSION['flash'])): $f = $_SESSION['flash']; unset($_SESSION['flash']); ?>
-  <div style="padding-top:20px">
+  <div style="padding-top:18px">
     <div class="flash flash--<?= $f['tipo'] === 'ok' ? 'ok' : 'err' ?>"><?= e($f['msg']) ?></div>
   </div>
 <?php endif; ?>

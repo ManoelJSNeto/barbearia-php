@@ -127,7 +127,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // STEP 3 → escolher horário e confirmar
     if ($acao === 'confirmar') {
-        $hora = $_POST['hora'] ?? '';
+        $hora           = $_POST['hora']    ?? '';
+        $confirmarJa    = isset($_POST['confirmar_ja']); // checkbox na página
 
         // valida slot novamente (evita race condition)
         $slots = getSlots((int)$bk['barbeiro_id'], (string)$bk['data'], (int)$bk['duracao_min']);
@@ -138,13 +139,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: /agendar.php'); exit;
         }
 
-        $dataHora    = $bk['data'] . ' ' . $hora . ':00';
+        $dataHora     = $bk['data'] . ' ' . $hora . ':00';
         $tokenConfirm = bin2hex(random_bytes(32));
+        $statusInicial = $confirmarJa ? 'confirmado' : 'pendente';
+        $confirmadoEm  = $confirmarJa ? 'NOW()' : 'NULL';
 
         $stmt = $pdo->prepare(
             "INSERT INTO agendamentos
-             (cliente_id, barbeiro_id, servico_id, combo_id, data_hora, duracao_min, preco, token_confirm)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+             (cliente_id, barbeiro_id, servico_id, combo_id, data_hora, duracao_min, preco, status, token_confirm, confirmado_em)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, " . ($confirmarJa ? 'NOW()' : 'NULL') . ")"
         );
         $stmt->execute([
             $usuario['id'],
@@ -154,13 +157,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $dataHora,
             $bk['duracao_min'],
             $bk['preco'],
+            $statusInicial,
             $tokenConfirm,
         ]);
 
         $agendamentoId = (int)$pdo->lastInsertId();
         unset($_SESSION['booking']);
 
-        // envia e-mail de confirmação
+        // envia e-mail
         require_once __DIR__ . '/../includes/mail.php';
         $agEmail = $pdo->prepare(
             "SELECT a.data_hora, a.preco,
@@ -177,10 +181,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $agEmail->execute([$agendamentoId]);
         $agDados = $agEmail->fetch();
         if ($agDados) {
-            mail_agendamento_criado($agDados, $tokenConfirm);
+            if ($confirmarJa) {
+                mail_confirmacao($agDados);
+            } else {
+                mail_agendamento_criado($agDados, $tokenConfirm);
+            }
         }
 
-        flash('ok', 'Agendamento criado. Confirme sua presença pelo link enviado por e-mail (ou clique abaixo).');
+        // redireciona para resumo com token
         header("Location: /confirmar.php?token={$tokenConfirm}");
         exit;
     }
@@ -406,11 +414,28 @@ require __DIR__ . '/../includes/header.php';
       <?php endforeach; ?>
     </div>
 
-    <div class="form-actions" style="margin-top: 28px;">
-      <button class="btn" type="submit" id="btn-confirmar" disabled>Confirmar agendamento</button>
+    <!-- confirmar presença já na hora de criar -->
+    <div style="margin-top:24px; padding:16px 18px; background:var(--surface); border:1px solid var(--border);">
+      <label style="display:flex; align-items:flex-start; gap:12px; cursor:pointer;">
+        <input type="checkbox" name="confirmar_ja" id="confirmar_ja" value="1" checked
+               style="width:auto; margin-top:2px; flex-shrink:0;">
+        <span>
+          <strong style="font-size:14px; color:var(--text); font-family:var(--font-body); letter-spacing:0; text-transform:none;">
+            Confirmar presença agora
+          </strong><br>
+          <span style="font-size:12px; color:var(--muted);">
+            Marque se você vai comparecer com certeza. Pode também confirmar depois pelo e-mail.
+          </span>
+        </span>
+      </label>
+    </div>
+
+    <div class="form-actions" style="margin-top:20px;">
+      <button class="btn" type="submit" id="btn-confirmar" disabled>Finalizar agendamento</button>
       <button class="btn btn--ghost" type="submit" formaction="/agendar.php" name="acao" value="voltar">Voltar</button>
     </div>
   </form>
+
   <script>
     function escolherSlot(hora, el) {
       document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
