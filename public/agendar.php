@@ -142,26 +142,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $dataHora     = $bk['data'] . ' ' . $hora . ':00';
         $tokenConfirm = bin2hex(random_bytes(32));
         $statusInicial = $confirmarJa ? 'confirmado' : 'pendente';
-        $confirmadoEm  = $confirmarJa ? 'NOW()' : 'NULL';
 
-        $stmt = $pdo->prepare(
-            "INSERT INTO agendamentos
-             (cliente_id, barbeiro_id, servico_id, combo_id, data_hora, duracao_min, preco, status, token_confirm, confirmado_em)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, " . ($confirmarJa ? 'NOW()' : 'NULL') . ")"
-        );
-        $stmt->execute([
-            $usuario['id'],
-            $bk['barbeiro_id'],
-            $bk['tipo'] === 'servico' ? $bk['item_id'] : null,
-            $bk['tipo'] === 'combo'   ? $bk['item_id'] : null,
-            $dataHora,
-            $bk['duracao_min'],
-            $bk['preco'],
-            $statusInicial,
-            $tokenConfirm,
-        ]);
+        try {
+            $pdo->beginTransaction();
 
-        $agendamentoId = (int)$pdo->lastInsertId();
+            // revalida disponibilidade dentro da transação (anti race-condition)
+            $lock = $pdo->prepare(
+                "SELECT COUNT(*) FROM agendamentos
+                 WHERE barbeiro_id=? AND data_hora=? AND status IN ('pendente','confirmado')"
+            );
+            $lock->execute([$bk['barbeiro_id'], $dataHora]);
+            if ((int)$lock->fetchColumn() > 0) {
+                $pdo->rollBack();
+                flash('err', 'Este horário foi reservado agora mesmo por outra pessoa. Escolha outro.');
+                $bk['step'] = 3;
+                header('Location: /agendar.php'); exit;
+            }
+
+            $pdo->prepare(
+                "INSERT INTO agendamentos
+                 (cliente_id, barbeiro_id, servico_id, combo_id, data_hora,
+                  duracao_min, preco, status, token_confirm, confirmado_em)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, IF(? = 1, NOW(), NULL))"
+            )->execute([
+                $usuario['id'],
+                $bk['barbeiro_id'],
+                $bk['tipo'] === 'servico' ? $bk['item_id'] : null,
+                $bk['tipo'] === 'combo'   ? $bk['item_id'] : null,
+                $dataHora,
+                $bk['duracao_min'],
+                $bk['preco'],
+                $statusInicial,
+                $tokenConfirm,
+                $confirmarJa ? 1 : 0,
+            ]);
+
+            $agendamentoId = (int)$pdo->lastInsertId();
+            $pdo->commit();
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            flash('err', 'Erro ao criar agendamento. Tente novamente.');
+            header('Location: /agendar.php'); exit;
+        }
+
         unset($_SESSION['booking']);
 
         // envia e-mail
@@ -322,9 +345,9 @@ require __DIR__ . '/../includes/header.php';
 
   <style>
     .service-card.selecionado {
-      outline: 2px solid var(--gold);
+      outline: 2px solid var(--accent);
       outline-offset: -2px;
-      background: var(--surface-2);
+      background: var(--accent-light);
     }
   </style>
   <script>
@@ -446,13 +469,13 @@ require __DIR__ . '/../includes/header.php';
   </script>
 
   <?php else: ?>
-  <div class="card" style="border-left: 3px solid var(--gold-dim);">
-    <p style="color: var(--muted);">Nenhum horário disponível para este barbeiro nesta data.</p>
-    <p style="margin-top: 12px;">
-      <a class="btn btn--ghost btn--sm" href="/agendar.php?reiniciar=1" onclick="if(event)event.preventDefault();history.back()">Escolher outra data</a>
+  <div class="card card--warn">
+    <p style="color:var(--muted);">Nenhum horário disponível para este barbeiro nesta data.</p>
+    <p style="margin-top:12px;">
+      <a class="btn btn--ghost btn--sm" href="javascript:history.back()">Escolher outra data</a>
     </p>
   </div>
-  <form method="post" style="margin-top: 16px;">
+  <form method="post" style="margin-top:14px;">
     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
     <button class="btn btn--ghost btn--sm" type="submit" name="acao" value="voltar">← Voltar</button>
   </form>

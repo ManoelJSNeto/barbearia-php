@@ -36,4 +36,12 @@
   /* ── Layout ───────────────────────────────────── */
   --max-content: 1080px;
   --radius:      4px;
+
+  /* ── Aliases de compatibilidade (paleta anterior) ── */
+  --gold:        var(--accent);
+  --gold-dim:    var(--accent-hover);
+  --gold-pale:   var(--muted);
+  --surface-2:   #F2EFE9;
+  --ok-bg:       #EBF5EF;
+  --err-bg:      #FAEAEA;
 }
