@@ -91,14 +91,14 @@ $titulo = 'Folgas';
 require __DIR__ . '/../../includes/header.php';
 ?>
 
-<div style="padding-top:40px; padding-bottom:80px;">
+<div class="panel">
 
   <div class="page-head">
     <h1>Minhas folgas</h1>
     <p class="sub">Indique períodos em que você não estará disponível</p>
   </div>
 
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start;">
+  <div class="panel-cols">
 
     <!-- lista de bloqueios -->
     <div>
@@ -143,7 +143,7 @@ require __DIR__ . '/../../includes/header.php';
         <h2 style="font-size:1.3rem">Nova folga</h2>
         <span class="section-head-line"></span>
       </div>
-      <div class="card">
+      <div class="panel-form">
         <form method="post">
           <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
           <input type="hidden" name="acao" value="criar">
@@ -158,7 +158,7 @@ require __DIR__ . '/../../includes/header.php';
             </select>
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-grid-2">
             <div class="field">
               <label for="hora_inicio">Início</label>
               <input type="time" name="hora_inicio" id="hora_inicio" required>

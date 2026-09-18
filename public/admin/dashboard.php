@@ -38,7 +38,7 @@ $titulo = 'Dashboard';
 require __DIR__ . '/../../includes/header.php';
 ?>
 
-<div style="padding-top:40px; padding-bottom:80px;">
+<div class="panel">
 
   <div class="page-head">
     <h1>Dashboard</h1>
@@ -93,10 +93,20 @@ require __DIR__ . '/../../includes/header.php';
   <?php endif; ?>
 
   <!-- links rápidos -->
-  <div style="margin-top:36px; display:flex; gap:12px; flex-wrap:wrap;">
-    <a class="btn btn--ghost" href="/admin/barbeiros.php">Gerenciar barbeiros</a>
-    <a class="btn btn--ghost" href="/admin/servicos.php">Gerenciar serviços</a>
-    <a class="btn btn--ghost" href="/admin/configuracoes.php">Configurações SMTP</a>
+  <div class="quick-actions">
+    <a class="btn btn--ghost btn--sm" href="/admin/barbeiros.php">Gerenciar barbeiros</a>
+    <a class="btn btn--ghost btn--sm" href="/admin/servicos.php">Gerenciar serviços</a>
+    <a class="btn btn--ghost btn--sm" href="/admin/clientes.php">Clientes</a>
+    <a class="btn btn--ghost btn--sm" href="/admin/tickets.php">
+      Tickets
+      <?php
+      $pendentes = (int)$pdo->query("SELECT COUNT(*) FROM tickets WHERE status='pendente'")->fetchColumn();
+      if ($pendentes > 0): ?>
+        <span style="background:var(--warn); color:#fff; border-radius:10px; font-size:10px; padding:1px 6px; margin-left:4px; font-weight:600;"><?= $pendentes ?></span>
+      <?php endif; ?>
+    </a>
+    <a class="btn btn--ghost btn--sm" href="/admin/mensagens.php">Mensagens</a>
+    <a class="btn btn--ghost btn--sm" href="/admin/configuracoes.php">Config SMTP</a>
   </div>
 
 </div>

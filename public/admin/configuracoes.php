@@ -76,7 +76,7 @@ $titulo = 'Configurações';
 require __DIR__ . '/../../includes/header.php';
 ?>
 
-<div style="padding-top:40px; padding-bottom:80px; max-width:680px;">
+<div class="panel" style="max-width:720px;">
 
   <div class="page-head">
     <h1>Configurações</h1>
@@ -96,10 +96,8 @@ require __DIR__ . '/../../includes/header.php';
     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
     <input type="hidden" name="acao" value="salvar">
 
-    <div class="card" style="margin-bottom:24px;">
-      <p style="font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-pale);margin-bottom:20px;">
-        Servidor SMTP
-      </p>
+    <div class="panel-form" style="margin-bottom:24px;">
+      <p class="panel-form-title">Servidor SMTP</p>
 
       <!-- ativar/desativar -->
       <div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);margin-bottom:20px;">
@@ -156,18 +154,16 @@ require __DIR__ . '/../../includes/header.php';
   </form>
 
   <!-- teste de envio -->
-  <div class="card" style="border-left:3px solid var(--gold-dim);">
-    <p style="font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-pale);margin-bottom:16px;">
-      Testar envio
-    </p>
-    <form method="post" style="display:flex;gap:12px;align-items:flex-end;">
+  <div class="panel-form" style="border-left:3px solid var(--accent-hover);">
+    <p class="panel-form-title">Testar envio</p>
+    <form method="post" style="display:flex;gap:12px;align-items:flex-end; flex-wrap:wrap;">
       <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
       <input type="hidden" name="acao" value="testar">
-      <div class="field" style="margin:0;flex:1;">
+      <div class="field" style="margin:0;flex:1; min-width:200px;">
         <label>Enviar e-mail de teste para</label>
         <input type="email" name="teste_email" placeholder="seu@email.com" required>
       </div>
-      <button class="btn btn--ghost btn--sm" type="submit" style="margin-bottom:1px;">Enviar teste</button>
+      <button class="btn btn--ghost btn--sm" type="submit">Enviar teste</button>
     </form>
     <p style="font-size:12px;color:var(--muted);margin-top:12px;">
       Envia um e-mail simples para confirmar que o SMTP está funcionando.

@@ -94,7 +94,7 @@ $titulo = 'Agendamentos';
 require __DIR__ . '/../../includes/header.php';
 ?>
 
-<div style="padding-top:40px; padding-bottom:80px;">
+<div class="panel">
 
   <div class="page-head">
     <h1>Agendamentos</h1>
@@ -102,8 +102,8 @@ require __DIR__ . '/../../includes/header.php';
   </div>
 
   <!-- filtros -->
-  <form method="get" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:28px; align-items:flex-end;">
-    <div class="field" style="margin:0; min-width:140px;">
+  <form method="get" class="filter-bar">
+    <div class="field">
       <label>Status</label>
       <select name="status">
         <option value="">Todos</option>
@@ -112,7 +112,7 @@ require __DIR__ . '/../../includes/header.php';
         <?php endforeach; ?>
       </select>
     </div>
-    <div class="field" style="margin:0; min-width:160px;">
+    <div class="field">
       <label>Barbeiro</label>
       <select name="barbeiro">
         <option value="">Todos</option>
@@ -121,7 +121,7 @@ require __DIR__ . '/../../includes/header.php';
         <?php endforeach; ?>
       </select>
     </div>
-    <div class="field" style="margin:0;">
+    <div class="field">
       <label>Data</label>
       <input type="date" name="data" value="<?= e($filtroData) ?>">
     </div>

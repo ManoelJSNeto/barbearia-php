@@ -140,7 +140,7 @@ $titulo = 'Serviços';
 require __DIR__ . '/../../includes/header.php';
 ?>
 
-<div style="padding-top:40px; padding-bottom:80px;">
+<div class="panel">
 
   <div class="page-head">
     <h1>Serviços &amp; Combos</h1>
@@ -152,12 +152,12 @@ require __DIR__ . '/../../includes/header.php';
   <?php endforeach; ?>
 
   <!-- ── CATEGORIAS ─────────────────────────────────────────── -->
-  <div style="margin-bottom:48px;">
+  <div class="panel-section">
     <div class="section-head">
       <h2 style="font-size:1.3rem">Categorias</h2>
       <span class="section-head-line"></span>
     </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start;">
+    <div class="panel-cols">
 
       <div class="table-wrap">
         <table class="table">
@@ -182,8 +182,8 @@ require __DIR__ . '/../../includes/header.php';
         </table>
       </div>
 
-      <div class="card">
-        <p style="font-size:12px; font-weight:500; letter-spacing:.07em; text-transform:uppercase; color:var(--gold-pale); margin-bottom:14px">Nova categoria</p>
+      <div class="panel-form">
+        <p class="panel-form-title">Nova categoria</p>
         <form method="post">
           <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
           <input type="hidden" name="acao" value="salvar_categoria">
@@ -197,12 +197,12 @@ require __DIR__ . '/../../includes/header.php';
   </div>
 
   <!-- ── SERVIÇOS ───────────────────────────────────────────── -->
-  <div style="margin-bottom:48px;">
+  <div class="panel-section">
     <div class="section-head">
       <h2 style="font-size:1.3rem">Serviços</h2>
       <span class="section-head-line"></span>
     </div>
-    <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:32px; align-items:start;">
+    <div class="panel-cols panel-cols--wide">
 
       <div class="table-wrap">
         <table class="table">
@@ -212,7 +212,7 @@ require __DIR__ . '/../../includes/header.php';
             <tr>
               <td><strong><?= e($s['nome']) ?></strong><br><span style="font-size:12px;color:var(--muted)"><?= e(mb_strimwidth($s['descricao'] ?? '', 0, 50, '…')) ?></span></td>
               <td style="font-size:13px; color:var(--muted)"><?= e($s['categoria']) ?></td>
-              <td style="color:var(--gold)">R$ <?= number_format((float)$s['preco'], 2, ',', '.') ?></td>
+              <td style="color:var(--accent)">R$ <?= number_format((float)$s['preco'], 2, ',', '.') ?></td>
               <td style="font-size:13px; color:var(--muted)"><?= (int)$s['duracao_min'] ?> min</td>
               <td><span class="badge <?= $s['ativo'] ? 'badge--ok' : 'badge--muted' ?>"><?= $s['ativo'] ? 'Ativo' : 'Inativo' ?></span></td>
               <td>
@@ -229,8 +229,8 @@ require __DIR__ . '/../../includes/header.php';
         </table>
       </div>
 
-      <div class="card">
-        <p style="font-size:12px; font-weight:500; letter-spacing:.07em; text-transform:uppercase; color:var(--gold-pale); margin-bottom:14px">Novo serviço</p>
+      <div class="panel-form">
+        <p class="panel-form-title">Novo serviço</p>
         <form method="post">
           <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
           <input type="hidden" name="acao" value="salvar_servico">
@@ -246,7 +246,7 @@ require __DIR__ . '/../../includes/header.php';
           </div>
           <div class="field"><label>Nome</label><input type="text" name="nome" required maxlength="100"></div>
           <div class="field"><label>Descrição</label><textarea name="descricao" rows="2"></textarea></div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-grid-2">
             <div class="field"><label>Preço (R$)</label><input type="text" name="preco" required placeholder="0.00"></div>
             <div class="field"><label>Duração (min)</label><input type="number" name="duracao_min" required min="5" max="480"></div>
           </div>
@@ -258,12 +258,12 @@ require __DIR__ . '/../../includes/header.php';
   </div>
 
   <!-- ── COMBOS ─────────────────────────────────────────────── -->
-  <div>
+  <div class="panel-section">
     <div class="section-head">
       <h2 style="font-size:1.3rem">Combos</h2>
       <span class="section-head-line"></span>
     </div>
-    <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:32px; align-items:start;">
+    <div class="panel-cols panel-cols--wide">
 
       <div class="table-wrap">
         <table class="table">
@@ -285,7 +285,7 @@ require __DIR__ . '/../../includes/header.php';
                   </span>
                 <?php endif; ?>
               </td>
-              <td style="color:var(--gold)">R$ <?= number_format((float)$c['preco'], 2, ',', '.') ?></td>
+              <td style="color:var(--accent)">R$ <?= number_format((float)$c['preco'], 2, ',', '.') ?></td>
               <td style="font-size:13px; color:var(--muted)"><?= (int)$c['duracao_min'] ?> min</td>
               <td><span class="badge <?= $c['ativo'] ? 'badge--ok' : 'badge--muted' ?>"><?= $c['ativo'] ? 'Ativo' : 'Inativo' ?></span></td>
               <td>
@@ -302,22 +302,22 @@ require __DIR__ . '/../../includes/header.php';
         </table>
       </div>
 
-      <div class="card">
-        <p style="font-size:12px; font-weight:500; letter-spacing:.07em; text-transform:uppercase; color:var(--gold-pale); margin-bottom:14px">Novo combo</p>
+      <div class="panel-form">
+        <p class="panel-form-title">Novo combo</p>
         <form method="post">
           <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
           <input type="hidden" name="acao" value="salvar_combo">
           <div class="field"><label>Nome</label><input type="text" name="combo_nome" required maxlength="100"></div>
           <div class="field"><label>Descrição</label><textarea name="combo_desc" rows="2"></textarea></div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-grid-2">
             <div class="field"><label>Preço (R$)</label><input type="text" name="combo_preco" required placeholder="0.00"></div>
             <div class="field"><label>Duração (min)</label><input type="number" name="combo_dur" required min="5" max="480"></div>
           </div>
           <div class="field">
             <label>Serviços incluídos</label>
-            <div style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto; padding:8px; background:var(--bg); border:1px solid var(--border);">
+            <div style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto; padding:8px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius);">
               <?php foreach ($todoServicos as $s): ?>
-                <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text); cursor:pointer; text-transform:none; letter-spacing:0;">
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text); cursor:pointer; text-transform:none; letter-spacing:0; font-weight:400;">
                   <input type="checkbox" name="combo_servicos[]" value="<?= (int)$s['id'] ?>">
                   <?= e($s['nome']) ?>
                 </label>

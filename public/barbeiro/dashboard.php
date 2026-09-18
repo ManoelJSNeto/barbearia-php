@@ -72,14 +72,14 @@ $titulo = 'Minha agenda';
 require __DIR__ . '/../../includes/header.php';
 ?>
 
-<div style="padding-top:32px; padding-bottom:80px;">
+<div class="panel">
 
   <div class="page-head">
     <div>
       <h1><?= e($usuario['nome']) ?></h1>
       <p class="sub">Agenda dos próximos dias</p>
     </div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <div class="inline-actions">
       <a class="btn btn--ghost btn--sm" href="/barbeiro/servicos.php">Meus serviços</a>
       <a class="btn btn--ghost btn--sm" href="/barbeiro/bloquear.php">Minhas folgas</a>
     </div>

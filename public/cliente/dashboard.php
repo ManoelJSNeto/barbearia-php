@@ -52,7 +52,7 @@ $titulo = 'Meus agendamentos';
 require __DIR__ . '/../../includes/header.php';
 ?>
 
-<div style="padding-top:36px; padding-bottom:80px;">
+<div class="panel">
 
   <div class="page-head">
     <div>
@@ -63,7 +63,7 @@ require __DIR__ . '/../../includes/header.php';
   </div>
 
   <!-- ── próximos ─────────────────────────────────────────── -->
-  <div style="margin-bottom:48px;">
+  <div class="panel-section">
     <div class="section-head">
       <h2 style="font-size:1.3rem;">Próximos</h2>
       <span class="section-head-line"></span>

@@ -99,7 +99,7 @@ $titulo = 'Barbeiros';
 require __DIR__ . '/../../includes/header.php';
 ?>
 
-<div style="padding-top:40px; padding-bottom:80px;">
+<div class="panel">
 
   <div class="page-head">
     <h1>Barbeiros</h1>
@@ -110,7 +110,7 @@ require __DIR__ . '/../../includes/header.php';
     <div class="flash flash--err"><?= e($e) ?></div>
   <?php endforeach; ?>
 
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start;">
+  <div class="panel-cols">
 
     <!-- lista -->
     <div>
@@ -137,7 +137,7 @@ require __DIR__ . '/../../includes/header.php';
                   </span>
                 </td>
                 <td style="white-space:nowrap">
-                  <a href="?carga=<?= (int)$b['id'] ?>" style="font-size:12px; color:var(--gold-pale)">Carga horária</a>
+                  <a href="?carga=<?= (int)$b['id'] ?>" style="font-size:12px; color:var(--muted)">Carga horária</a>
                   <form method="post" style="display:inline; margin-left:8px">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                     <input type="hidden" name="acao" value="toggle_ativo">
@@ -158,10 +158,8 @@ require __DIR__ . '/../../includes/header.php';
 
       <!-- carga horária inline -->
       <?php if ($cargaAberta && isset($bNome)): ?>
-        <div class="card" style="margin-top:24px; border-top:3px solid var(--gold);">
-          <p style="font-size:12px; font-weight:500; letter-spacing:.07em; text-transform:uppercase; color:var(--gold-pale); margin-bottom:16px">
-            Carga horária — <?= e($bNome) ?>
-          </p>
+        <div class="panel-form" style="margin-top:24px; border-top:3px solid var(--accent);">
+          <p class="panel-form-title">Carga horária — <?= e($bNome) ?></p>
           <form method="post">
             <input type="hidden" name="csrf_token"   value="<?= csrf_token() ?>">
             <input type="hidden" name="acao"          value="carga_horaria">
@@ -169,19 +167,17 @@ require __DIR__ . '/../../includes/header.php';
 
             <?php foreach ($diasSemana as $num => $nome): ?>
               <?php $row = $cargaHoraria[$num] ?? null; ?>
-              <div style="display:grid; grid-template-columns:24px 100px 1fr 1fr; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid var(--border);">
+              <div class="ch-row">
                 <input type="checkbox" name="dia[<?= $num ?>]" value="1" id="dia_<?= $num ?>"
                   <?= $row ? 'checked' : '' ?>
                   onchange="toggleDia(<?= $num ?>, this.checked)">
-                <label for="dia_<?= $num ?>" style="font-size:13px; color:var(--text); cursor:pointer"><?= $nome ?></label>
+                <label for="dia_<?= $num ?>" style="font-size:13px; color:var(--text); cursor:pointer; font-weight:400; letter-spacing:0; text-transform:none;"><?= $nome ?></label>
                 <input type="time" name="inicio_<?= $num ?>" id="ini_<?= $num ?>"
                   value="<?= e($row['hora_inicio'] ?? '09:00') ?>"
-                  <?= !$row ? 'disabled' : '' ?>
-                  style="padding:6px 8px; font-size:13px;">
+                  <?= !$row ? 'disabled' : '' ?>>
                 <input type="time" name="fim_<?= $num ?>" id="fim_<?= $num ?>"
                   value="<?= e($row['hora_fim'] ?? '18:00') ?>"
-                  <?= !$row ? 'disabled' : '' ?>
-                  style="padding:6px 8px; font-size:13px;">
+                  <?= !$row ? 'disabled' : '' ?>>
               </div>
             <?php endforeach; ?>
 
@@ -208,7 +204,7 @@ require __DIR__ . '/../../includes/header.php';
         <h2 style="font-size:1.3rem">Cadastrar barbeiro</h2>
         <span class="section-head-line"></span>
       </div>
-      <div class="card">
+      <div class="panel-form">
         <form method="post">
           <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
           <input type="hidden" name="acao" value="criar">
