@@ -82,6 +82,7 @@ require __DIR__ . '/../../includes/header.php';
     <div class="inline-actions">
       <a class="btn btn--ghost btn--sm" href="/barbeiro/servicos.php">Meus serviços</a>
       <a class="btn btn--ghost btn--sm" href="/barbeiro/bloquear.php">Minhas folgas</a>
+      <a class="btn btn--ghost btn--sm" href="/barbeiro/relatorio.php">Relatório</a>
     </div>
   </div>
 

@@ -53,6 +53,7 @@ $usuario = usuario_logado();
         <li><a href="/barbeiro/portfolio.php">Portfólio</a></li>
         <li><a href="/barbeiro/ticket.php">Sugerir serviço</a></li>
         <li><a href="/barbeiro/bloquear.php">Folgas</a></li>
+        <li><a href="/barbeiro/relatorio.php">Relatório</a></li>
         <li><span class="nav-sep" aria-hidden="true"></span></li>
         <li><a href="/logout.php" class="nav-exit">Sair</a></li>
 
